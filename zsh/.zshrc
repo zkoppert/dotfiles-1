@@ -31,12 +31,8 @@ miniplug plugin 'lukechilds/zsh-better-npm-completion'
 # ============================================================================= #
 #  ➜ ➜ ➜ THEMES
 # ============================================================================= #
-#miniplug theme "themes/robbyrussell", from:oh-my-zsh
-#miniplug theme  "$HOME/$DOTFILES/zsh/themes", from:local, as:theme, use:ss-o.zsh-theme
-#miniplug theme "denysdovhan/spaceship-prompt", use:spaceship.zsh, from:github, as:theme
 miniplug theme 'romkatv/powerlevel10k' depth:1
 # ============================================================================= #
-# ============================================================================= #
-miniplug load
+miniplug load 
 # ============================================================================= #
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
