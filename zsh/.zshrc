@@ -4,6 +4,9 @@ fi
 # ============================================================================= #
 #  ➜ ➜ ➜ ZSH
 # ============================================================================= #
+# [TEMPORARY]
+alias micro="mce"
+
 for env in $HOME/.dotfiles/**/*.env; do
     if [ -r $env ]; then
         source $env
@@ -35,4 +38,6 @@ miniplug theme 'romkatv/powerlevel10k' depth:1
 # ============================================================================= #
 miniplug load 
 # ============================================================================= #
+#       >> Homebrew
+[[ -d "/home/linuxbrew" ]] && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
