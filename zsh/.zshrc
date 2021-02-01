@@ -6,6 +6,7 @@ fi
 # ============================================================================= #
 # [TEMPORARY]
 alias micro="mce"
+export PATH="$PATH:$HOME/.gem/ruby/2.7.0/bin"
 
 for env in $HOME/.dotfiles/**/*.env; do
     if [ -r $env ]; then
