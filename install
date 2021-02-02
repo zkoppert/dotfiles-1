@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+# ============================================================================= #
+#  ➜ ➜ ➜ VARIABLES
+# ============================================================================= #
+DOSYNC_VERSION="0.1"
+DOTFILES="$HOME/.dotfiles"
+SYNCFILE="$DOTFILES/sync.config"
+GITOPT="-q"
+GITSUB="--quiet"
+GITSUBOPT="--quiet"
+INSTALL_FONTS="${INSTALL_FONTS:-no}"
+NO_TTY="${NOTTY:-no}"
+PIPED="${PIPED:-no}"
+
+# ============================================================================= #
+#  ➜ ➜ ➜ FUNCTIONS
+# ============================================================================= #
+#    export TERM="xterm-256color"
+
+ERROR() {
+    echo "$@" >&2
+    exit 1
+}
+
+HAS_TERMINAL() {
+    [ -t 0 ]
+}
+
+IS_TTY() {
+    HAS_TERMINAL
+}
+
+IS_PIPED() {
+    ! [ -t 1 ]
+}
+
+IS_GIT() {
+    if [[ ! -d .git ]]; then
+        echo "Not a git repository"
+        exit 1
+    fi
+}
+
+INIT_LOCAL() {
+    cd "$DOTFILES"
+    IS_GIT
+    # init the main repo
+    git submodule $GITSUB update --init --recursive
+    cd
+}
+
+GET_GIT_ORIGIN() {
+    cd "$DOTFILES"
+    if [[ -d .git ]]; then
+        ORIGIN=$(git config -l | grep remote.origin.url | awk -F'=' '{print $2}')
+    fi
+    cd
+}
+
+GIT_PULL() {
+    GET_GIT_ORIGIN
+    cd "$DOTFILES"
+    IS_GIT
+    echo "Pulling latest changes from $ORIGIN"
+    git pull $GITOPT
+    echo "Pulling latest changes for submodules"
+    # Required if a submodule origin changed
+    git submodule $GITSUBOPT sync
+    git submodule $GITSUBOPT foreach --recursive git fetch
+    git submodule $GITSUBOPT update --init --recursive
+    cd
+}
+
+GIT_COMMIT() {
+    GET_GIT_ORIGIN
+    cd "$DOTFILES" || exit 1
+    echo "Commiting latest changes to the repository"
+    git commit -a $GITOPT
+    cd || return
+}
+
+GIT_PUSH() {
+    GET_GIT_ORIGIN
+    cd "$DOTFILES"
+    echo "Pushing changes upstream to $ORIGIN" &&
+        git push $GITOPT
+    cd
+}
+
+GET_SYNCFILE() {
+    if [[ ! -s $SYNCFILE ]]; then
+        if [[ -s "$DOTFILES/sync.config" ]]; then
+            SYNCFILE="$DOTFILES/sync.config"
+        else
+            echo "File $DOTFILES/sync.config doesnt exist, exiting"
+            exit 1
+        fi
+    fi
+}
+
+GET_FILES_LIST() {
+    SRCFILES="$(sed -n '/\[files\]/,/\[endfiles\]/p' $SYNCFILE | grep -v '^\[.*files]' | grep -v ^#)"
+    if [[ -z "$SRCFILES" ]]; then
+        echo "Specify files to sync in $DOTFILES/sync.config file"
+        exit 1
+    fi
+}
+
+GET_FILE() {
+    srcfile="$(echo $file | awk -F: '{print $1}')"
+    dstfile="$(echo $file | awk -F: '{print $2}')"
+    dotsrc="$DOTFILES/$srcfile"
+
+    if [[ $dstfile = "" ]]; then
+        dstfile=".$(basename "$srcfile")"
+    fi
+    dotfile="$HOME/$dstfile"
+}
+OPTIONS_LIST() {
+    if [ "$NO_TTY" = yes ]; then
+        echo "No tty"
+    fi
+
+    if [ "$INSTALL_FONTS" = yes ]; then
+        echo "Installing fonts"
+    fi
+}
+
+DO_OPTIONS() {
+    OPTIONS_LIST "$@"
+    if HAS_TERMINAL; then
+        export TERM="xterm-256color"
+    fi
+    # Run as unattended if stdin is not a tty
+    if ! IS_TTY; then
+        NO_TTY=yes
+    fi
+    if IS_PIPED; then
+        PIPED=true
+    fi
+    while [ $# -gt 0 ]; do
+        case $1 in
+        --unattended) NO_TTY=yes ;;
+        --fonts) INSTALL_FONTS=yes ;;
+        -u | --pull)
+            GIT_PULL
+            exit 0
+            ;;
+        -c | --commit)
+            GIT_COMMIT
+            exit 0
+            ;;
+        -p | --push)
+            GIT_PUSH
+            exit 0
+            ;;
+        esac
+        shift
+    done
+}
+
+DO_SYNC() {
+    GET_SYNCFILE
+    GET_FILES_LIST
+    for file in $SRCFILES; do
+        GET_FILE "$file"
+        ln -sf "$dotsrc" "$dotfile"
+        echo "Symlinked: $dotsrc -> $dotfile"
+    done
+    exit 0
+}
+
+while true; do
+    echo "DoSync Version: $DOSYNC_VERSION"
+    DO_OPTIONS "$@"
+    DO_SYNC
+done
