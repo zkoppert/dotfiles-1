@@ -22,11 +22,14 @@ unset load env
 # ============================================================================= #
 #  ➜ ➜ ➜ MINIPLUG
 # ============================================================================= #
+[ ! -d "$MINIPLUG_HOME" ] && mkdir -p "$MINIPLUG_HOME"
+
 miniplug plugin 'wuotr/zsh-plugin-vscode'
 miniplug plugin 'zsh-users/zsh-autosuggestions'
 miniplug plugin 'desyncr/auto-ls'
 miniplug plugin 'lukechilds/zsh-nvm'
 miniplug plugin 'mattberther/zsh-pyenv'
+miniplug plugin 'Tarrasch/zsh-autoenv'
 miniplug plugin 'MichaelAquilina/zsh-you-should-use'
 miniplug plugin 'unixorn/git-extra-commands'
 miniplug plugin 'zdharma/fast-syntax-highlighting'
@@ -40,5 +43,5 @@ miniplug theme 'romkatv/powerlevel10k' depth:1
 miniplug load 
 # ============================================================================= #
 #       >> Homebrew
-[[ -d "/home/linuxbrew" ]] && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+#[[ -d "/home/linuxbrew" ]] && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
