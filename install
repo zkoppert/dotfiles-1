@@ -158,6 +158,10 @@ DO_OPTIONS() {
     if IS_PIPED; then
         PIPED=yes
     fi
+    while [ $# = 0 ]; do
+        DO_SYNC
+        FINISHED
+    done
     while [ $# -gt 0 ]; do
         case $1 in
         --unattended) NO_TTY=yes ;;
@@ -199,5 +203,4 @@ DO_SYNC() {
 while true; do
     echo "DoSync Version: $DOSYNC_VERSION"
     DO_OPTIONS "$@"
-    DO_SYNC
 done
