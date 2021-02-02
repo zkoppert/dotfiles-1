@@ -19,12 +19,18 @@ PIPED="${PIPED:-no}"
 # ============================================================================= #
 
 ERROR() {
+    echo "$(tput setaf 1)"
     echo "$@" >&2
+    echo "$(tput sgr0)"
+
     exit 1
 }
 
 FINISHED() {
+    echo "$(tput setaf 2)"
     echo "Finished successfully!"
+    echo "$(tput sgr0)"
+
     exit 0
 }
 
@@ -210,8 +216,9 @@ DO_SYNC() {
 }
 
 while true; do
-    echo "$(tput setaf 1)"
+    echo "$(tput setaf 2)"
     echo "DoSync Version: $DOSYNC_VERSION"
+    echo "$(tput setaf 4)"
     DO_OPTIONS "$@"
     echo "$(tput sgr0)"
 done
