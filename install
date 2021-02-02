@@ -238,7 +238,6 @@ DO_OPTIONS() {
             SUCCESS
             ;;
         -A | --all)
-            ACTION="action"
             GIT_CHECK_ALL
             SUCCESS
             ;;
@@ -249,8 +248,8 @@ DO_OPTIONS() {
         esac
         shift
     done
+    ACTION="action"
     GET_OPTIONS "$@"
-    DO_ACTION
 }
 
 DO_SYNC() {
@@ -314,6 +313,7 @@ MAIN() {
     echo "DoSync Version: $DOSYNC_VERSION"
     tput setaf 4
     DO_OPTIONS "${@}"
+    DO_ACTION
     tput sgr0
     FINISHED
 }
