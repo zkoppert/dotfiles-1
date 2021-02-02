@@ -20,6 +20,14 @@ PIPED="${PIPED:-no}"
 # ============================================================================= #
 #  ➜ ➜ ➜ FUNCTIONS
 # ============================================================================= #
+NO_ROOT() {
+    tput bold
+    tput setaf 1
+    if [[ $USER == "root" ]]; then
+        ERROR "Do not run as root"
+    fi
+    tput sgr0
+}
 
 ERROR() {
     tput bold
@@ -339,6 +347,7 @@ DO_ACTION() {
 }
 
 MAIN() {
+    NO_ROOT
     tput setaf 5
     echo "DoSync Version: $DOSYNC_VERSION"
     tput bold

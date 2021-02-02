@@ -1,14 +1,13 @@
-python
+ctags
 ====
 
-Configs for python related stuff
+Configs for ctags related stuff
 
 To use, add the following to sync.config
 
     [files]
     
-    python/pythonrc
-    python/pylintrc
+    lib/ctags/ctags
     
     [endfiles]
 
