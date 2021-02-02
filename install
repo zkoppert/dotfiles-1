@@ -214,12 +214,12 @@ DO_OPTIONS() {
     if IS_PIPED; then
         PIPED=yes
     fi
-    while [ $# = 0 ]; do
-        DO_SYNC
-        FINISHED
-    done
-    while [ $# -gt 0 ]; do
-        case $1 in
+    #while [ $# = 0 ]; do
+    #    DO_SYNC
+    #    FINISHED
+    #done
+    while [ $# -ge 0 ]; do
+        case $@ in
         --unattended) NO_TTY=yes ;;
         --dosync) INSTALL_DOSYNC=yes ;;
         --micro) INSTALL_MICRO=yes ;;
@@ -248,7 +248,7 @@ DO_OPTIONS() {
         esac
         shift
     done
-    ACTION="action"
+    ACTION=""
     GET_OPTIONS "$@"
 }
 
@@ -301,11 +301,14 @@ DO_SYNC() {
 }
 
 DO_ACTION() {
+    tput bold
+    tput setaf 2
     case $ACTION in
     action)
         echo "Action tested"
         ;;
     esac
+    tput sgr0
 }
 
 MAIN() {
