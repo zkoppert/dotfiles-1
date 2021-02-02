@@ -39,7 +39,7 @@ SUCCESS() {
 FINISHED() {
     tput bold
     tput setaf 2
-    echo "Finished successfully!"
+    echo "All finished successfully!"
     tput sgr0
     exit 0
 }
@@ -231,11 +231,11 @@ DO_OPTIONS() {
             ;;
         -C | --commit)
             GIT_COMMIT
-            FINISHED
+            SUCCESS
             ;;
         -P | --push)
             GIT_PUSH
-            FINISHED
+            SUCCESS
             ;;
         -A | --all)
             GIT_CHECK_ALL
