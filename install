@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+trap MAIN SIGINT SIGQUIT SIGTERM
 # ============================================================================= #
 #  ➜ ➜ ➜ VARIABLES
 # ============================================================================= #
@@ -214,12 +215,12 @@ DO_OPTIONS() {
     if IS_PIPED; then
         PIPED=yes
     fi
-    #while [ $# = 0 ]; do
-    #    DO_SYNC
-    #    FINISHED
-    #done
-    while [ $# -ge 0 ]; do
-        case $@ in
+    while [ $# = 0 ]; do
+        ACTION='sync'
+        DO_ACTION
+    done
+    while [ $# -gt 0 ]; do
+        case $1 in
         --unattended) NO_TTY=yes ;;
         --dosync) INSTALL_DOSYNC=yes ;;
         --micro) INSTALL_MICRO=yes ;;
@@ -241,15 +242,12 @@ DO_OPTIONS() {
             GIT_CHECK_ALL
             SUCCESS
             ;;
-        *)
-            echo "Unknown option"
-            exit 0
-            ;;
+        *) echo "Unknown option specified" ;;
         esac
         shift
     done
-    ACTION=""
     GET_OPTIONS "$@"
+    DO_ACTION
 }
 
 DO_SYNC() {
@@ -304,8 +302,9 @@ DO_ACTION() {
     tput bold
     tput setaf 2
     case $ACTION in
-    action)
-        echo "Action tested"
+    sync)
+        DO_SYNC
+        FINISHED
         ;;
     esac
     tput sgr0
@@ -316,9 +315,8 @@ MAIN() {
     echo "DoSync Version: $DOSYNC_VERSION"
     tput setaf 4
     DO_OPTIONS "${@}"
-    DO_ACTION
-    tput sgr0
     FINISHED
+    tput sgr0
 }
 
 while true; do
