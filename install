@@ -28,6 +28,14 @@ ERROR() {
     exit 1
 }
 
+SUCCESS() {
+    tput bold
+    tput setaf 2
+    echo "Success!"
+    tput sgr0
+    return 0
+}
+
 FINISHED() {
     tput bold
     tput setaf 2
@@ -170,24 +178,20 @@ GET_FILE() {
 GET_OPTIONS() {
     if [ "$NO_TTY" = yes ]; then
         echo "No tty"
-        FINISHED
     fi
     if [ "$INSTALL_FONTS" = yes ]; then
         echo "Installing fonts"
-        FINISHED
     fi
     if [ "$INSTALL_DOSYNC" = yes ]; then
         echo "Installing DoSync"
         ln -sf "$DOTFILES/install" "$DOTFILES/bin/dosync"
         export PATH="$PATH:$DOTFILES/bin"
-        FINISHED
     fi
     if [ "$INSTALL_NOTEBOOK" = yes ]; then
         echo "Installing NoteBook (nb.sh)"
         sudo wget https://raw.github.com/xwmx/nb/master/nb -O /usr/local/bin/nb &&
             sudo chmod +x /usr/local/bin/nb &&
             sudo nb completions install --download
-        FINISHED
     fi
     if [ "$INSTALL_MICRO" = yes ]; then
         echo "Installing Micro Editor"
@@ -196,7 +200,6 @@ GET_OPTIONS() {
         make build
         mv micro "$DOTFILES/bin/"
         cd .. && rm -rf micro || return 0
-        FINISHED
     fi
 }
 
@@ -224,7 +227,7 @@ DO_OPTIONS() {
         --notebook) INSTALL_NOTEBOOK=yes ;;
         -U | --pull)
             GIT_PULL
-            FINISHED
+            SUCCESS
             ;;
         -C | --commit)
             GIT_COMMIT
@@ -236,7 +239,11 @@ DO_OPTIONS() {
             ;;
         -A | --all)
             GIT_CHECK_ALL
-            FINISHED
+            SUCCESS
+            ;;
+        *)
+            echo "Unknown option"
+            exit 0
             ;;
         esac
         shift
@@ -289,7 +296,14 @@ DO_SYNC() {
         fi
     done
     tput sgr0
-    FINISHED
+}
+
+DO_ACTION() {
+    case $ACTION in
+    action)
+        echo "Action tested"
+        ;;
+    esac
 }
 
 MAIN() {
@@ -298,6 +312,7 @@ MAIN() {
     tput setaf 4
     DO_OPTIONS "${@}"
     tput sgr0
+    FINISHED
 }
 
 while true; do
