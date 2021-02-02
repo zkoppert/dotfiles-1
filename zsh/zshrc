@@ -25,7 +25,7 @@ plugins=(git history-substring-search command-not-found
     npm yarn python golang pip virtualenv virtualenvwrapper
     cargo ruby rust gem bundler
     brew
-    direnv dotenv
+    direnv dotenv thefuck
     doctl gcloud minikube systemd docker docker-compose
     nmap ssh-agent gpg-agent sudo
     colorize rsync vscode extract copydir taskwarrior zsh_reload)
@@ -36,7 +36,7 @@ ohmyzsh_load
 # ============================================================================= #
 [ ! -d "$MINIPLUG_HOME" ] && mkdir -p "$MINIPLUG_HOME"
 
-miniplug plugin 'wuotr/zsh-plugin-vscode'
+miniplug plugin 'digital-clouds/gitio-zsh'
 miniplug plugin 'zsh-users/zsh-autosuggestions'
 miniplug plugin 'desyncr/auto-ls'
 miniplug plugin 'lukechilds/zsh-nvm'
