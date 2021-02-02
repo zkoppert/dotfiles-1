@@ -6,6 +6,7 @@
 DOSYNC_VERSION="v0.1"
 DOTFILES="$HOME/.dotfiles"
 SYNCFILE="$DOTFILES/sync.config"
+BACKUP_DIR="$HOME/.backup"
 GITOPT="-q"
 GITSUB="--quiet"
 GITSUBOPT="--quiet"
@@ -20,18 +21,16 @@ PIPED="${PIPED:-no}"
 # ============================================================================= #
 
 ERROR() {
-    echo "$(tput setaf 1)"
+    tput setaf 1
     echo "$@" >&2
-    echo "$(tput sgr0)"
-
+    tput sgr0
     exit 1
 }
 
 FINISHED() {
-    echo "$(tput setaf 2)"
+    tput setaf 2
     echo "Finished successfully!"
-    echo "$(tput sgr0)"
-
+    tput sgr0
     exit 0
 }
 
@@ -52,6 +51,19 @@ IS_GIT() {
         echo "Not a git repository"
         exit 1
     fi
+}
+
+RM_BROKEN_LINKS() {
+    tput setaf 3
+    #    if [[ "$VERBOSE" == True ]]; then
+    echo "Removing broken symlinks from $HOME"
+    #    fi
+    find "$HOME" -maxdepth 1 -name ".*" -type l | while read -r f; do if [ ! -e "$f" ]; then rm -f "$f"; fi; done
+    #    if [[ "$VERBOSE" == True ]]; then
+    echo "Removing broken symlinks from $HOME/.config"
+    #    fi
+    find "$HOME/.config" -maxdepth 1 -name "*" -type l | while read -r f; do if [ ! -e "$f" ]; then rm -f "$f"; fi; done
+    tput sgr0
 }
 
 INIT_LOCAL() {
@@ -121,23 +133,38 @@ GET_SYNCFILE() {
 }
 
 GET_FILES_LIST() {
-    SRCFILES="$(sed -n '/\[files\]/,/\[endfiles\]/p' $SYNCFILE | grep -v '^\[.*files]' | grep -v ^#)"
+    SRCFILES="$(sed -n '/\[files\]/,/\[endfiles\]/p' "$SYNCFILE" | grep -v '^\[.*files]' | grep -v '^#')"
+    CONFIG_FILES="$(sed -n '/\[configfiles\]/,/\[endconfigfiles\]/p' "$SYNCFILE" | grep -v '^\[.*configfiles]' | grep -v '^#')"
     if [[ -z "$SRCFILES" ]]; then
         echo "Specify files to sync in $DOTFILES/sync.config file"
         exit 1
     fi
+    #    if [[ -z "$CONFIG_FILES" ]]; then
+    #        echo "Specify which $DOTFILES/config files to sync in $DOTFILES/sync.config file"
+    #        exit 1
+    #    fi
 }
 
 GET_FILE() {
-    srcfile="$(echo $file | awk -F: '{print $1}')"
-    dstfile="$(echo $file | awk -F: '{print $2}')"
-    dotsrc="$DOTFILES/$srcfile"
+    srcfile="$(echo "$file" | awk -F: '{print $1}')"
+    dstfile="$(echo "$file" | awk -F: '{print $2}')"
+    DOTSRC="$DOTFILES/$srcfile"
+
+    srcconfig="$(echo "$config_file" | awk -F: '{print $1}')"
+    dstconfig="$(echo "$config_file" | awk -F: '{print $2}')"
+    CONFIG_DOTSRC="$DOTFILES/$srcconfig"
 
     if [[ $dstfile = "" ]]; then
         dstfile=".$(basename "$srcfile")"
     fi
-    dotfile="$HOME/$dstfile"
+    DOTFILE="$HOME/$dstfile"
+
+    if [[ $dstconfig = "" ]]; then
+        dstconfig="$(basename "$srcconfig")"
+    fi
+    CONFIG_DOTFILE="$HOME/.config/$dstconfig"
 }
+
 GET_OPTIONS() {
     if [ "$NO_TTY" = yes ]; then
         echo "No tty"
@@ -205,21 +232,60 @@ DO_OPTIONS() {
     GET_OPTIONS "$@"
 }
 
+#    if [[ "$VERBOSE" == True ]]; then
+#      echo "*** Symlinked $DOTFILE to $DOTSRC ***"
+#    fi
+
 DO_SYNC() {
     GET_SYNCFILE
     GET_FILES_LIST
+    for config_file in $CONFIG_FILES; do
+        GET_FILE "$config_file"
+        if [[ -e "$CONFIG_DOTFILE" ]] && [[ ! -L "$CONFIG_DOTFILE" ]]; then
+            [[ ! -d "$BACKUP_DIR/config" ]] && mkdir -p "$BACKUP_DIR/config"
+            CONFIG_BACKUP="$BACKUP_DIR/config/$(basename "$config_file")"
+            echo "$CONFIG_DOTFILE already exists, backing up -> $CONFIG_BACKUP"
+            cp -r "$CONFIG_DOTFILE" "$CONFIG_BACKUP"
+            rm -rf "$CONFIG_DOTFILE"
+            ln -s "$CONFIG_DOTSRC" "$CONFIG_DOTFILE"
+            echo "Symlinked: $CONFIG_DOTSRC -> $CONFIG_DOTFILE"
+        elif [[ -e "$CONFIG_DOTFILE" ]]; then
+            rm -f "$CONFIG_DOTFILE"
+            ln -s "$CONFIG_DOTSRC" "$CONFIG_DOTFILE"
+            echo "Symlinked: $CONFIG_DOTSRC -> $CONFIG_DOTFILE"
+        else
+            ln -s "$CONFIG_DOTSRC" "$CONFIG_DOTFILE"
+            echo "Symlinked: $CONFIG_DOTSRC -> $CONFIG_DOTFILE"
+        fi
+    done
     for file in $SRCFILES; do
         GET_FILE "$file"
-        ln -sf "$dotsrc" "$dotfile"
-        echo "Symlinked: $dotsrc -> $dotfile"
+        if [[ -e "$DOTFILE" ]] && [[ ! -L "$DOTFILE" ]]; then
+            [[ ! -d "BACKUP_DIR" ]] && mkdir -p "BACKUP_DIR"
+            BACKUP="$BACKUP_DIR/$(basename "$file")"
+            echo "$DOTFILE already exists, backing up -> $BACKUP"
+            cp -r "$DOTFILE" "$BACKUP"
+            rm -rf "$DOTFILE"
+            ln -s "$DOTSRC" "$DOTFILE"
+            echo "Symlinked: $DOTSRC -> $DOTFILE"
+        elif [[ -e "$DOTFILE" ]]; then
+            rm -f "$DOTFILE"
+            ln -s "$DOTSRC" "$DOTFILE"
+            echo "Symlinked: $DOTSRC -> $DOTFILE"
+        else
+            ln -s "$DOTSRC" "$DOTFILE"
+            echo "Symlinked: $DOTSRC -> $DOTFILE"
+        fi
     done
     FINISHED
 }
 
 while true; do
-    echo "$(tput setaf 2)"
+    tput setaf 2
     echo "DoSync Version: $DOSYNC_VERSION"
-    echo "$(tput setaf 4)"
+    RM_BROKEN_LINKS
+    tput bold
+    tput setaf 4
     DO_OPTIONS "$@"
-    echo "$(tput sgr0)"
+    tput sgr0
 done
