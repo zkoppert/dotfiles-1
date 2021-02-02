@@ -1,9 +1,9 @@
- python
+python
 ====
 
 Configs for python related stuff
 
-To use, add the following to **sync.config**
+To use, add the following to sync.config
 
     [files]
     

@@ -189,6 +189,15 @@ GET_OPTIONS() {
             sudo nb completions install --download
         FINISHED
     fi
+    if [ "$INSTALL_MICRO" = yes ]; then
+        echo "Installing Micro Editor"
+        git clone https://github.com/zyedidia/micro
+        cd micro || ERROR "Failed to clone repository, exiting..."
+        make build
+        mv micro "$DOTFILES/bin/"
+        cd .. && rm -rf micro || return 0
+        FINISHED
+    fi
 }
 
 DO_OPTIONS() {
@@ -210,6 +219,7 @@ DO_OPTIONS() {
         case $1 in
         --unattended) NO_TTY=yes ;;
         --dosync) INSTALL_DOSYNC=yes ;;
+        --micro) INSTALL_MICRO=yes ;;
         --fonts) INSTALL_FONTS=yes ;;
         --notebook) INSTALL_NOTEBOOK=yes ;;
         -U | --pull)
@@ -233,10 +243,6 @@ DO_OPTIONS() {
     done
     GET_OPTIONS "$@"
 }
-
-#    if [[ "$VERBOSE" == True ]]; then
-#      echo "*** Symlinked $DOTFILE to $DOTSRC ***"
-#    fi
 
 DO_SYNC() {
     RM_BROKEN_LINKS
@@ -286,10 +292,14 @@ DO_SYNC() {
     FINISHED
 }
 
-while true; do
+MAIN() {
     tput setaf 5
     echo "DoSync Version: $DOSYNC_VERSION"
     tput setaf 4
-    DO_OPTIONS "$@"
+    DO_OPTIONS "${@}"
     tput sgr0
+}
+
+while true; do
+    MAIN "${@}"
 done
