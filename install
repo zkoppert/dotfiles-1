@@ -34,7 +34,6 @@ SUCCESS() {
     tput setaf 2
     echo "Success!"
     tput sgr0
-    return 0
 }
 
 FINISHED() {
@@ -155,7 +154,7 @@ GIT_ADD() {
 GIT_CHECK_ALL() {
     GET_GIT_ORIGIN
     GIT_ADD
-    GIT_COMMIT || exit 0
+    GIT_COMMIT
     GIT_PUSH
 }
 
