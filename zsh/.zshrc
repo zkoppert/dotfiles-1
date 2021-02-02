@@ -6,7 +6,6 @@ fi
 # ============================================================================= #
 # [TEMPORARY]
 alias mce="micro"
-export PATH="$PATH:$HOME/.gem/ruby/2.7.0/bin"
 
 for env in $HOME/.dotfiles/**/*.env; do
     if [ -r $env ]; then
@@ -20,7 +19,20 @@ for load in $HOME/.dotfiles/zsh/*.zsh; do
 done
 unset load env
 # ============================================================================= #
-#  ➜ ➜ ➜ MINIPLUG
+#  ➜ ➜ ➜ OH-MY-ZSH PLUGINS
+# ============================================================================= #
+plugins=(git history-substring-search command-not-found
+    npm yarn python golang pip virtualenv virtualenvwrapper
+    cargo ruby rust gem bundler
+    brew
+    direnv dotenv
+    doctl gcloud minikube systemd docker docker-compose
+    nmap ssh-agent gpg-agent sudo
+    colorize rsync vscode extract copydir taskwarrior zsh_reload)
+
+ohmyzsh_load
+# ============================================================================= #
+#  ➜ ➜ ➜ MINIPLUG PLUGINS
 # ============================================================================= #
 [ ! -d "$MINIPLUG_HOME" ] && mkdir -p "$MINIPLUG_HOME"
 
@@ -36,12 +48,10 @@ miniplug plugin 'zdharma/fast-syntax-highlighting'
 miniplug plugin 'zsh-users/zsh-completions'
 miniplug plugin 'lukechilds/zsh-better-npm-completion'
 # ============================================================================= #
-#  ➜ ➜ ➜ THEMES
+#  ➜ ➜ ➜ THEME
 # ============================================================================= #
 miniplug theme 'romkatv/powerlevel10k' depth:1
 # ============================================================================= #
 miniplug load 
 # ============================================================================= #
-#       >> Homebrew
-#[[ -d "/home/linuxbrew" ]] && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+[[ ! -f ~/.dotfiles/zsh/.p10k ]] || source ~/.dotfiles/zsh/.p10k
