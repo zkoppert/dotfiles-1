@@ -238,6 +238,7 @@ DO_OPTIONS() {
             SUCCESS
             ;;
         -A | --all)
+            ACTION="action"
             GIT_CHECK_ALL
             SUCCESS
             ;;
@@ -249,6 +250,7 @@ DO_OPTIONS() {
         shift
     done
     GET_OPTIONS "$@"
+    DO_ACTION
 }
 
 DO_SYNC() {
@@ -296,6 +298,7 @@ DO_SYNC() {
         fi
     done
     tput sgr0
+    SUCCESS
 }
 
 DO_ACTION() {
