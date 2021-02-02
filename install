@@ -21,6 +21,7 @@ PIPED="${PIPED:-no}"
 # ============================================================================= #
 
 ERROR() {
+    tput bold
     tput setaf 1
     echo "$@" >&2
     tput sgr0
@@ -28,6 +29,7 @@ ERROR() {
 }
 
 FINISHED() {
+    tput bold
     tput setaf 2
     echo "Finished successfully!"
     tput sgr0
@@ -237,8 +239,11 @@ DO_OPTIONS() {
 #    fi
 
 DO_SYNC() {
+    RM_BROKEN_LINKS
     GET_SYNCFILE
     GET_FILES_LIST
+    tput bold
+    tput setaf 6
     for config_file in $CONFIG_FILES; do
         GET_FILE "$config_file"
         if [[ -e "$CONFIG_DOTFILE" ]] && [[ ! -L "$CONFIG_DOTFILE" ]]; then
@@ -277,14 +282,13 @@ DO_SYNC() {
             echo "Symlinked: $DOTSRC -> $DOTFILE"
         fi
     done
+    tput sgr0
     FINISHED
 }
 
 while true; do
-    tput setaf 2
+    tput setaf 5
     echo "DoSync Version: $DOSYNC_VERSION"
-    RM_BROKEN_LINKS
-    tput bold
     tput setaf 4
     DO_OPTIONS "$@"
     tput sgr0
