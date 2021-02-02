@@ -10,6 +10,7 @@ GITSUB="--quiet"
 GITSUBOPT="--quiet"
 INSTALL_FONTS="${INSTALL_FONTS:-no}"
 INSTALL_DOSYNC="${INSTALL_DOSYNC:-no}"
+INSTALL_NOTEBOOK="${INSTALL_NOTEBOOK:-no}"
 NO_TTY="${NOTTY:-no}"
 PIPED="${PIPED:-no}"
 
@@ -145,6 +146,13 @@ GET_OPTIONS() {
         export PATH="$PATH:$DOTFILES/bin"
         FINISHED
     fi
+    if [ "$INSTALL_NOTEBOOK" = yes ]; then
+        echo "Installing NoteBook (nb.sh)"
+        sudo wget https://raw.github.com/xwmx/nb/master/nb -O /usr/local/bin/nb &&
+            sudo chmod +x /usr/local/bin/nb &&
+            sudo nb completions install --download
+        FINISHED
+    fi
 }
 
 DO_OPTIONS() {
@@ -167,6 +175,7 @@ DO_OPTIONS() {
         --unattended) NO_TTY=yes ;;
         --dosync) INSTALL_DOSYNC=yes ;;
         --fonts) INSTALL_FONTS=yes ;;
+        --notebook) INSTALL_NOTEBOOK=yes ;;
         -U | --pull)
             GIT_PULL
             FINISHED
