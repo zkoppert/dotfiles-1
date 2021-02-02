@@ -38,10 +38,10 @@ SUCCESS() {
 }
 
 FINISHED() {
-    #tput bold
-    #tput setaf 8
-    #echo "All finished!"
-    #tput sgr0
+    tput bold
+    tput setaf 8
+    echo "$@"
+    tput sgr0
     exit 0
 }
 
@@ -155,7 +155,7 @@ GIT_ADD() {
 GIT_CHECK_ALL() {
     GET_GIT_ORIGIN
     GIT_ADD
-    GIT_COMMIT
+    GIT_COMMIT || exit 0
     GIT_PUSH
 }
 
@@ -255,23 +255,18 @@ DO_OPTIONS() {
         --notebook) INSTALL_NOTEBOOK=yes ;;
         -U | --pull)
             GIT_PULL
-
             ;;
         -D | --add)
             GIT_ADD
-
             ;;
         -C | --commit)
             GIT_COMMIT
-
             ;;
         -P | --push)
             GIT_PUSH
-
             ;;
         -A | --all)
             GIT_CHECK_ALL
-
             ;;
         -H | --help)
             USAGE
@@ -330,7 +325,6 @@ DO_SYNC() {
         fi
     done
     tput sgr0
-    SUCCESS
 }
 
 DO_ACTION() {
@@ -339,7 +333,7 @@ DO_ACTION() {
     case $ACTION in
     sync)
         DO_SYNC
-        FINISHED
+        FINISHED "All finished successfully"
         ;;
     esac
     tput sgr0
@@ -351,7 +345,7 @@ MAIN() {
     tput bold
     tput setaf 4
     DO_OPTIONS "${@}"
-    FINISHED
+    exit 0
     tput sgr0
 }
 
