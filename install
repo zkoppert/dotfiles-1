@@ -210,6 +210,8 @@ DO_SYNC() {
 }
 
 while true; do
+    echo "$(tput setaf 1)"
     echo "DoSync Version: $DOSYNC_VERSION"
     DO_OPTIONS "$@"
+    echo "$(tput sgr0)"
 done
