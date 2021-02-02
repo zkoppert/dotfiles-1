@@ -5,7 +5,7 @@ fi
 #  ➜ ➜ ➜ ZSH
 # ============================================================================= #
 # [TEMPORARY]
-alias micro="mce"
+alias mce="micro"
 export PATH="$PATH:$HOME/.gem/ruby/2.7.0/bin"
 
 for env in $HOME/.dotfiles/**/*.env; do
