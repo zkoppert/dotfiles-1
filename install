@@ -92,6 +92,15 @@ GIT_PUSH() {
     cd || return 0
 }
 
+GIT_CHECK_ALL() {
+    GET_GIT_ORIGIN
+    cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
+    git add .
+    cd || return 0
+    GIT_COMMIT
+    GIT_PUSH
+}
+
 GET_SYNCFILE() {
     if [[ ! -s $SYNCFILE ]]; then
         if [[ -s "$DOTFILES/sync.config" ]]; then
@@ -131,7 +140,7 @@ GET_OPTIONS() {
         FINISHED
     fi
     if [ "$INSTALL_DOSYNC" = yes ]; then
-        echo "Installing DoSync as command"
+        echo "Installing DoSync"
         ln -sf "$DOTFILES/install" "$DOTFILES/bin/dosync"
         export PATH="$PATH:$DOTFILES/bin"
         FINISHED
@@ -154,16 +163,20 @@ DO_OPTIONS() {
         --unattended) NO_TTY=yes ;;
         --dosync) INSTALL_DOSYNC=yes ;;
         --fonts) INSTALL_FONTS=yes ;;
-        -u | --pull)
+        -U | --pull)
             GIT_PULL
             FINISHED
             ;;
-        -c | --commit)
+        -C | --commit)
             GIT_COMMIT
             FINISHED
             ;;
-        -p | --push)
+        -P | --push)
             GIT_PUSH
+            FINISHED
+            ;;
+        -A | --all)
+            GIT_CHECK_ALL
             FINISHED
             ;;
         esac
