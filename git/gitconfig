@@ -35,3 +35,5 @@
 	remotes = remote -v
 ##[include]
 ##    path = ~/.gitconfig.local
+[init]
+	defaultBranch = main
