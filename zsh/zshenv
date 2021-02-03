@@ -1,22 +1,24 @@
 # https://blog.patshead.com/2011/04/improve-your-oh-my-zsh-startup-time-maybe.html
 skip_global_compinit=1
-
 # http://disq.us/p/f55b78
 setopt noglobalrcs
+
 export FULL_NAME='Salvydas Lukosius'
 export EMAIL='sall@w-ss.io'
 export GITHUB_USER='ss-o'
 export GITLAB_USER='ss-o'
 export SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 export GPG_TTY=$(tty)
-#export PYENV_ROOT="$HOME/.pyenv"
-#export NVM_DIR="$HOME/.nvm"
-#export GOPATH="$HOME/go"
-#export XDG_CONFIG_HOME="${HOME}/.config"
-#export XDG_RUNTIME_DIR=/run/user/$(id -u)
+
+[ -d "$HOME/go" ] && export GOPATH="$HOME/go"
+[ -d "$HOME/.pyenv" ] && export PYENV_ROOT="$HOME/.pyenv"
+[ -d "$HOME/.nvm" ] && export NVM_DIR="$HOME/.nvm"
+
+export XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+
 # Terminal
 #export TERM="xterm-256color"
-
 # https://github.com/sorin-ionescu/prezto/blob/master/runcoms/zshenv
 # Ensure that a non-login, non-interactive shell has a defined environment.
 if [[ ("$SHLVL" -eq 1 && ! -o LOGIN) && -s "${ZDOTDIR:-$HOME}/.zprofile" ]]; then
@@ -68,4 +70,12 @@ fi
 
 if [ -d "/usr/local/bin" ]; then
     export PATH="$PATH:/usr/local/bin"
+fi
+
+if [ -d "$HOME/.dotfiles/bin" ]; then
+    export PATH="$PATH:$HOME/.dotfiles/bin"
+fi
+
+if [ -d "$GOPATH/bin" ]; then
+     export PATH="$PATH:GOPATH/bin"
 fi
