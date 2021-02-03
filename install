@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
-
-trap MAIN SIGINT SIGQUIT SIGTERM
+trap '' SIGINT SIGQUIT SIGTERM
+# ============================================================================= #
+#  ➜ ➜ ➜ CONFIG
+# ============================================================================= #
+DOSYNC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # ============================================================================= #
 #  ➜ ➜ ➜ VARIABLES
 # ============================================================================= #
-DOSYNC_VERSION="v0.1"
+DOSYNC_VERSION="v0.2"
 DOTFILES="$HOME/.dotfiles"
+DOTFILES_BIN="$DOTFILES/bin"
 SYNCFILE="$DOTFILES/sync.config"
 BACKUP_DIR="$HOME/.backup"
 GITOPT="-q"
@@ -16,10 +20,24 @@ INSTALL_DOSYNC="${INSTALL_DOSYNC:-no}"
 INSTALL_NOTEBOOK="${INSTALL_NOTEBOOK:-no}"
 NO_TTY="${NOTTY:-no}"
 PIPED="${PIPED:-no}"
-
+# CHSHZSH="chsh -s $(which zsh)"
+# RELOAD_SHELL="exec $SHELL -l"
 # ============================================================================= #
 #  ➜ ➜ ➜ FUNCTIONS
 # ============================================================================= #
+__procceed() {
+    echo "Proceed? [y/N]"
+    read -r response
+    case $response in
+    y/Y) return 0 ;;
+    *) exit 1 ;;
+    esac
+}
+PRE_CHECKS() {
+    if [ "$DOTFILES" != "$DOSYNC_DIR" ]; then
+        echo "Dotfiles different as expected"
+    fi
+}
 NO_ROOT() {
     tput bold
     tput setaf 1
@@ -28,7 +46,6 @@ NO_ROOT() {
     fi
     tput sgr0
 }
-
 ERROR() {
     tput bold
     tput setaf 1
@@ -36,14 +53,12 @@ ERROR() {
     tput sgr0
     exit 1
 }
-
 SUCCESS() {
     tput bold
     tput setaf 2
     echo "Success!"
     tput sgr0
 }
-
 FINISHED() {
     tput bold
     tput setaf 8
@@ -51,19 +66,15 @@ FINISHED() {
     tput sgr0
     exit 0
 }
-
 HAS_TERMINAL() {
     [ -t 0 ]
 }
-
 IS_TTY() {
     HAS_TERMINAL
 }
-
 IS_PIPED() {
     ! [ -t 1 ]
 }
-
 IS_GIT() {
     if [[ ! -d .git ]]; then
         echo "Not a git repository"
@@ -219,8 +230,10 @@ GET_OPTIONS() {
     fi
     if [ "$INSTALL_DOSYNC" = yes ]; then
         echo "Installing DoSync"
-        ln -sf "$DOTFILES/install" "$DOTFILES/bin/dosync"
-        export PATH="$PATH:$DOTFILES/bin"
+        ln -sf "$DOTFILES/install" "$DOTFILES/bin/dosync" || ERROR "Failed to install"
+        export PATH="$PATH:$DOTFILES_BIN"
+        echo "DoSync installed to used path. Try to execute (dosync -H)"
+        sleep 1
     fi
     if [ "$INSTALL_NOTEBOOK" = yes ]; then
         echo "Installing NoteBook (nb.sh)"
@@ -237,12 +250,10 @@ GET_OPTIONS() {
         cd .. && rm -rf micro || return 0
     fi
 }
-
 DO_OPTIONS() {
     if HAS_TERMINAL; then
         export TERM="xterm-256color"
     fi
-    # Run as unattended if stdin is not a tty
     if ! IS_TTY; then
         NO_TTY=yes
     fi
@@ -279,7 +290,7 @@ DO_OPTIONS() {
             USAGE
             exit 0
             ;;
-        *) echo "Unknown option specified" ;;
+        *) echo "Unknown option" ;;
         esac
         shift
     done
@@ -315,7 +326,7 @@ DO_SYNC() {
     for file in $SRCFILES; do
         GET_FILE "$file"
         if [[ -e "$DOTFILE" ]] && [[ ! -L "$DOTFILE" ]]; then
-            [[ ! -d "BACKUP_DIR" ]] && mkdir -p "BACKUP_DIR"
+            [[ ! -d "$BACKUP_DIR" ]] && mkdir -p "$BACKUP_DIR"
             BACKUP="$BACKUP_DIR/$(basename "$file")"
             echo "$DOTFILE already exists, backing up -> $BACKUP"
             cp -r "$DOTFILE" "$BACKUP"
@@ -356,7 +367,6 @@ MAIN() {
     exit 0
     tput sgr0
 }
-
 while true; do
     MAIN "${@}"
 done

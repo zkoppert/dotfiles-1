@@ -1,0 +1,5 @@
+rm -fv ~/*.zwc
+rm -fv ${SSO}/*.zwc
+rm -fv ${SSO}/autoload/*.zwc
+rm -fv ${SSO}/completion/*.zwc
+rm -fv ${SSO}/lib/*.zwc
