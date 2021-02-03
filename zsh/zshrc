@@ -112,8 +112,8 @@ zplugin light zsh-users/zsh-completions
 #zplugin light zsh-users/zsh-history-substring-search
 zplugin ice wait"1a" atload"_alias-tip-setting" lucid
 zplugin light djui/alias-tips
-zplugin ice wait"1b" atload"_zsh-git-smart-commands-setting" blockf lucid
-zplugin light seletskiy/zsh-git-smart-commands
+#zplugin ice wait"1b" atload"_zsh-git-smart-commands-setting" blockf lucid
+#zplugin light seletskiy/zsh-git-smart-commands
 #zplugin ice wait"1b" atload"_fzf-widgets-setting" lucid
 #zplugin light ytet5uy4/fzf-widgets
 
@@ -139,6 +139,5 @@ zplugin light raylee/tldr
 # ============================================================================= #
 #  ➜ ➜ ➜ ZSH
 # ============================================================================= #
-
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f "$DOTFILES/zsh/themes/p10k" ]] || source "$DOTFILES/zsh/themes/p10k"
