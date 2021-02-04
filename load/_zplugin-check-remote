@@ -1,7 +1,5 @@
-echo "Check git remote.."
-
 ORI_DIR=$(pwd)
-cd $ZPLUGIN_DIR
+cd $ZINIT;
 if git remote -v | grep origin | grep zplugin ; then
     git remote set-url origin https://github.com/zdharma/zinit.git
 fi

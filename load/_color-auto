@@ -11,5 +11,4 @@ case ${TERM} in
         _color-flex
         ;;
 esac
-
 export SSO_COLOR='auto'

@@ -1,42 +1,33 @@
-# ============================================================================= #
-export SSO="${0:a:h}"
-SSOPATH="${SSO}/autoload"
-fpath+="${SSO}"
-if [[ -d "$SSOPATH" ]]; then
-    for func in $SSOPATH/*; do
-        autoload -Uz ${func:t}
-    done
-fi
-unset SSOPATH
 case $- in
     *i*);;
     *) return 0;;
 esac
 if [ -t 0 ]; then
-echo "output"
+## IN TERMINAL
+return 0
+else
+## NO TERMINAL
+return 0
 fi
-ZSH_PRE_INIT() {
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi  
-    DOTFILES="$HOME/.dotfiles"
-    ZSH_HOME="$HOME/.zsh"
-    ZINIT="$ZSH_HOME/.zplugin/bin"
-    [ ! -d "$ZINIT" ] && mkdir -p "$ZINIT"
-    [ ! -f "$ZINIT/zinit.zsh" ] && git clone https://github.com/zdharma/zinit.git "$ZINIT"
-    ZPLUGIN_DIR="${ZINIT:-$ZSH_HOME/.zplugin}" ##    source "$ZPLUGIN_BIN"
+#    DOTFILES="$HOME/.dotfiles"
+#    ZSH_HOME="$HOME/.zsh"
+    ZINIT="$ZSH_HOME/.zinit"
+    if [ ! -d "$ZINIT" ]; then
+    mkdir -p "$ZINIT"
+    git clone https://github.com/zdharma/zinit.git "$ZINIT/bin"
+#    [ ! -f "$ZINIT/zinit.zsh" ] && git clone https://github.com/zdharma/zinit.git "$ZINIT"
     source "$ZINIT/zinit.zsh"
-autoload -Uz _zplugin
-(( ${+_comps} )) && _comps[zplugin]=_zplugin
-autoload -Uz cdr
-autoload -Uz chpwd_recent_dirs
-}
+#source ~/.zinit/bin/zinit.zsh
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
 # ============================================================================= #
 #  ➜ ➜ ➜ ZSH
 # ============================================================================= #
-ZSH_PRE_INIT
 zinit wait lucid for \
- atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
+atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
     zdharma/fast-syntax-highlighting \
     zdharma/history-search-multi-word
 # For GNU ls (the binaries can be gls, gdircolors, e.g. on OS X when installing the
@@ -63,81 +54,23 @@ _zsh-lazyenv-setting() {
   export ZSH_EVALCACHE_DIR=${SSO}/cache
   lazyenv-enabled
 }
-ZSH="$ZSH_HOME/.zplugin/plugins/robbyrussell---oh-my-zsh/"
-local _OMZ_SOURCES=(
-    # Libs
-    lib/compfix.zsh
-    lib/directories.zsh
-    lib/functions.zsh
-    lib/git.zsh
-    lib/termsupport.zsh
-    # Plugins
-##  plugins/autojump/autojump.plugin.zsh
-    plugins/command-not-found/command-not-found.plugin.zsh
-    plugins/git/git.plugin.zsh
-    plugins/gitfast/gitfast.plugin.zsh
-    plugins/pip/pip.plugin.zsh
-    plugins/sudo/sudo.plugin.zsh
-    plugins/thefuck/thefuck.plugin.zsh
-    plugins/urltools/urltools.plugin.zsh
-)
-if [[ $DOCKER_ENABLE ]]; then
-    _OMZ_SOURCES=(
-        $_OMZ_SOURCES
-        plugins/docker/_docker
-        plugins/docker-compose/docker-compose.plugin.zsh
-    )
-fi
-zplugin ice from"gh" pick"/dev/null" nocompletions blockf lucid \
-        multisrc"${_OMZ_SOURCES}" compile"(${(j.|.)_OMZ_SOURCES})" \
-        atinit"_zpcompinit-custom; zpcdreplay" atload"_OMZ_SETTING" wait"1c"
-# zplugin light robbyrussell/oh-my-zsh
 # ============================================================================= #
 #  ➜ ➜ ➜ 
 # ============================================================================= #
-#zplugin light chrissicool/zsh-256color
-#zplugin light mafredri/zsh-async
-zplugin ice depth"1"
-zplugin light romkatv/powerlevel10k
-# ============================================================================= #
-zplugin ice wait"0a" compile'{src/*.zsh,src/strategies/*}' atload"_zsh_autosuggest_start" lucid
-zplugin light zsh-users/zsh-autosuggestions
-zplugin ice wait"0b" lucid
-zplugin light hlissner/zsh-autopair
-zplugin ice wait"0b" blockf lucid
-zplugin light zsh-users/zsh-completions
-#zplugin ice wait"0c" atload"_enhancd-setting" lucid
-#zplugin light b4b4r07/enhancd
-#zplugin ice wait"0c" atload"_zsh-history-substring-search-setting" lucid
-#zplugin light zsh-users/zsh-history-substring-search
-zplugin ice wait"1a" atload"_alias-tip-setting" lucid
-zplugin light djui/alias-tips
-#zplugin ice wait"1b" atload"_zsh-git-smart-commands-setting" blockf lucid
-#zplugin light seletskiy/zsh-git-smart-commands
-#zplugin ice wait"1b" atload"_fzf-widgets-setting" lucid
-#zplugin light ytet5uy4/fzf-widgets
+setopt promptsubst
 
-zplugin ice wait"2" lucid
-zplugin light wfxr/forgit
-zplugin ice wait"2" lucid
-zplugin light peterhurford/up.zsh
-zplugin ice wait"2" lucid
-zplugin light jocelynmallon/zshmarks
-#zplugin ice wait"2" lucid
-#zplugin light changyuheng/zsh-interactive-cd
-zplugin ice wait"2" atload"_zsh-lazyenv-setting" lucid
-zplugin light black7375/zsh-lazyenv
-zplugin ice wait"2" pick"h.sh" lucid
-zplugin light paoloantinori/hhighlighter
-zplugin ice wait"2" as"program" pick"tldr" lucid
-zplugin light raylee/tldr
+# B.
+zinit wait lucid for \
+        OMZL::git.zsh \
+  atload"unalias grv" \
+        OMZP::git
+zinit wait lucid for \
+                        OMZ::lib/git.zsh \
+    atload"unalias grv" OMZ::plugins/git/git.plugin.zsh
 
-#if  [[ ! (( "$OSTYPE" == "linux-gnu" && $(uname -r | sed -n 's/.*\( *Microsoft *\).*/\1/ip') )) ]]; then
-#  zplugin ice wait"2" atload"_zsh-notify-setting" lucid
-#  zplugin light marzocchi/zsh-notify
-#fi
+zinit ice depth=1; zinit light romkatv/powerlevel10k
 # ============================================================================= #
-#  ➜ ➜ ➜ ZSH
+#  ➜ ➜ ➜ p10k PROMPT
+source "$DOTFILES/zsh/themes/p10k"
 # ============================================================================= #
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f "$DOTFILES/zsh/themes/p10k" ]] || source "$DOTFILES/zsh/themes/p10k"
+echo "done"
