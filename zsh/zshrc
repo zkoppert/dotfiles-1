@@ -1,72 +1,62 @@
-case $- in
-    *i*);;
-    *) return 0;;
-esac
-if [ -t 0 ]; then
-## IN TERMINAL
-return 0
-else
-## NO TERMINAL
-return 0
-fi
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi  
-#    DOTFILES="$HOME/.dotfiles"
-#    ZSH_HOME="$HOME/.zsh"
-    ZINIT="$ZSH_HOME/.zinit"
+    DOTFILES="$HOME/.dotfiles"
+    ZSH_HOME="$HOME/.zsh"
+    ZINIT="$ZSH_HOME/.zinit/bin"
     if [ ! -d "$ZINIT" ]; then
     mkdir -p "$ZINIT"
-    git clone https://github.com/zdharma/zinit.git "$ZINIT/bin"
-#    [ ! -f "$ZINIT/zinit.zsh" ] && git clone https://github.com/zdharma/zinit.git "$ZINIT"
-    source "$ZINIT/zinit.zsh"
-#source ~/.zinit/bin/zinit.zsh
+    git clone https://github.com/zdharma/zinit.git "$ZINIT"
+    fi
+source "$ZINIT/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 # ============================================================================= #
 #  ➜ ➜ ➜ ZSH
 # ============================================================================= #
-zinit wait lucid for \
-atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
-    zdharma/fast-syntax-highlighting \
-    zdharma/history-search-multi-word
+zinit for \
+    light-mode  zsh-users/zsh-autosuggestions \
+    light-mode  zdharma/fast-syntax-highlighting \
+                zdharma/history-search-multi-word
 # For GNU ls (the binaries can be gls, gdircolors, e.g. on OS X when installing the
 # coreutils package from Homebrew; you can also use https://github.com/ogham/exa)
 zinit ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!'
 zinit light trapd00r/LS_COLORS
-    #\# make'!...' -> run make before atclone & atpull
+#\# make'!...' -> run make before atclone & atpull
 zinit ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' atpull'%atclone' src"zhook.zsh"
 zinit light direnv/direnv
-if type docker &>/dev/null; then
-    export DOCKER_ENABLE=true
-fi
-_OMZ_SETTING() {
-eval "$(thefuck --alias)"
-}
-_zsh-notify-setting() {
-  zstyle ':notify:*' error-title "Command failed (in #{time_elapsed} seconds)"
-  zstyle ':notify:*' success-title "Command finished (in #{time_elapsed} seconds)"
-}
-_alias-tip-setting() {
-  export ZSH_PLUGINS_ALIAS_TIPS_FORCE=0
-}
-_zsh-lazyenv-setting() {
-  export ZSH_EVALCACHE_DIR=${SSO}/cache
-  lazyenv-enabled
-}
+#zinit ice as"program" make build zyedidia/micro
 # ============================================================================= #
 #  ➜ ➜ ➜ 
 # ============================================================================= #
 setopt promptsubst
-
-# B.
+zinit wait lucid for OMZ::lib/git.zsh \
+OMZ::lib/compfix.zsh \
+OMZ::lib/directories.zsh \
+OMZ::lib/functions.zsh \
+OMZ::lib/termsupport.zsh \
+OMZ::lib/completion.zsh \
+    atload"unalias grv" OMZ::plugins/git/git.plugin.zsh \
 zinit wait lucid for \
-        OMZL::git.zsh \
-  atload"unalias grv" \
-        OMZP::git
-zinit wait lucid for \
-                        OMZ::lib/git.zsh \
-    atload"unalias grv" OMZ::plugins/git/git.plugin.zsh
+      OMZ::plugins/command-not-found \
+      OMZ::plugins/pip \
+      OMZ::plugins/nvm \
+      OMZ::plugins/sudo \
+      OMZ::plugins/thefuck \
+      OMZ::plugins/urltools \
+  as"completion" \
+        OMZP::docker/_docker \
+  mattberther/zsh-pyenv \
+  nvm-sh/nvm \
+  mafredri/zsh-async \
+  zpm-zsh/ls \
+  mattmc3/zsh-cd-ls \
+  MichaelAquilina/zsh-you-should-use \
+  unixorn/git-extra-commands \
+  zsh-users/zsh-autosuggestions \
+  zsh-users/zsh-completions \
+  lukechilds/zsh-better-npm-completion \
+  denysdovhan/gitio-zsh
 
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 # ============================================================================= #
@@ -74,3 +64,6 @@ zinit ice depth=1; zinit light romkatv/powerlevel10k
 source "$DOTFILES/zsh/themes/p10k"
 # ============================================================================= #
 echo "done"
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
