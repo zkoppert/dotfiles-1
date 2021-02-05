@@ -1,3 +1,4 @@
+#TODO: Setup funtions if sourced.
 SSO_SET() {
     for sso_set in "$HOME/.dotfiles/**/.sso_set/*"; do
         if [ -r "$sso_set" ]; then
