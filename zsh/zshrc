@@ -136,8 +136,11 @@ zinit wait"2" lucid for \
         wfxr/forgit
 
 # Recommended Be Loaded Last.
-zinit ice wait'3' blockf lucid atpull'zinit creinstall -q .'
-zinit load zsh-users/zsh-completions
+#zinit ice wait'3' blockf lucid atpull'zinit creinstall -q .'
+#zinit load zsh-users/zsh-completions
+zinit wait'2' lucid atload"zicompinit; zicdreplay" blockf for \
+    zsh-users/zsh-completions
+
 
 zinit ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
     atpull'%atclone' src"zhook.zsh"; zinit light direnv/direnv
@@ -147,6 +150,9 @@ zinit ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" n
 
 zinit ice from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*" \
     zinit load docker/compose
+
+
+
 
 # rbenv
 # zinit ice has'rbenv' id-as'rbenv' atpull'%atclone' \
