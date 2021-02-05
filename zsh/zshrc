@@ -169,7 +169,7 @@ zinit ice from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*" \
 #zinit ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
 #zinit load zdharma/zplugin-crasis
 
-zinit ice nocd for \
+zinit ice for \
     load'![[ $MYPROMPT = 1 ]]' \
     unload'![[ $MYPROMPT != 1 ]]' \
     depth='1'; zinit light romkatv/powerlevel10k
