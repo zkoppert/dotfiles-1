@@ -1,18 +1,53 @@
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+#PROFILE_STARTUP=false
+#if [[ "$PROFILE_STARTUP" == true ]]; then
+#    zmodload zsh/zprof
+#    # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
+#    PS4=$'%D{%M%S%.} %N:%i> '
+#    exec 3>&2 2>$HOME/startlog.$$
+#    setopt xtrace prompt_subst
+#fi
+_1st_found() {
+    for cmd in "$@"; do
+        if type "$cmd" &>/dev/null; then
+            printf "%s" "${cmd}"
+            break
+        fi
+    done
+}
+for file in "${NVM_DIR}/nvm.sh" \
+            "${NVM_DIR}/bash_completion" \
+            "${HOME}/.zsh/prompts.zsh" \
+            "${HOME}/.zsh/aliases.zsh" \
+            "${HOME}/.zsh/set_history.zsh" \
+            "${HOME}/.zsh/zinit.zsh" \
+            "${HOME}/.zsh/completions.zsh" \
+            "${HOME}/.zsh/other/command-not-found.zsh" \
+            "${HOME}/.local/bin/virtualenvwrapper_lazy.sh"
+do
+    [ -s "${file}" ] && source "${file}"
+done
+# Automatically list directory contents on `cd`.
+auto-ls () { ls; }
+[[ ${chpwd_functions[(r)auto-ls]} == auto-ls ]] || chpwd_functions=( auto-ls $chpwd_functions )
 # ============================================================================= #
 # *** ➜ ➜ ➜ VARIABLES
 # ============================================================================= #
 export DOTFILES="$HOME/.dotfiles"
 export ZSH_HOME="$HOME/.zsh"
+export ZINIT_HOME="$ZSH_HOME/.zinit"
 export EDITOR=micro
 export SYSTEMD_EDITOR=${EDITOR}
 export GIT_DISCOVERY_ACROSS_FILESYSTEM=true # etckeeper on bedrock
+#CURRENT_DIR=${0:a:h}
+# 1 = powerlevel10k
+MYPROMPT=1 
+unset -f _1st_found
 # ============================================================================= #
 # *** ➜ ➜ ➜ ZINIT [INSTALLER]
 # ============================================================================= #
-#ZINIT_HOME="${ZINIT_HOME:-${ZSH_HOME:-${ZDOTDIR:-${HOME/.zsh}}/.zinit}}"
 if [[ ! -f $ZSH_HOME/.zinit/bin/zinit.zsh ]]; then
     print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
     command mkdir -p "$ZSH_HOME/.zinit" && command chmod g-rwX "$ZSH_HOME/.zinit"
@@ -23,10 +58,9 @@ fi
 source "$ZSH_HOME/.zinit/bin/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
-# A binary Zsh module which transparently and automatically compiles sourced scripts
-#module_path+=( "${HOME}/.zsh/.zinit/bin/zmodules/Src" )
-#zmodload zdharma/zplugin &>/dev/null
-
+module_path+=( "${HOME}/.zsh/.zinit/bin/zmodules/Src" )
+zmodload zdharma/zplugin &>/dev/null
+fpath+=( "$DOTFILES/zsh/functions" )
 # Functions to make configuration less verbose
 # zt() : First argument is a wait time and suffix, ie "0a". Anything that doesn't match will be passed as if it were an ice mod. Default ices depth'3' and lucid
 #zt(){ zinit depth'3' lucid ${1/#[0-9][a-c]/wait"${1}"} "${@:2}"; }
@@ -34,20 +68,14 @@ autoload -Uz _zinit
 # *** ➜ ➜ ➜ OH-MY-ZSH [LIBRARY] [PLUGINS] 
 # ============================================================================= #
 setopt promptsubst
-# LOAD TMUX 
-#zinit lucid for \
-#    atinit"
-#        ZSH_TMUX_FIXTERM=true
-#        ZSH_TMUX_AUTOSTART=true
-#        ZSH_TMUX_AUTOCONNECT=true
-#    " \
-#    OMZP::tmux \
-#    atinit"HIST_STAMPS=dd.mm.yyyy" \
 
 zinit wait lucid for \
     OMZL::history.zsh \
+    OMZL::completion.zsh \
 	OMZL::clipboard.zsh \
+    OMZL::functions.zsh \
 	OMZL::compfix.zsh \
+    OMZL::misc.zsh \
 	OMZL::correction.zsh \
     atload"
         alias ..='cd ..'
@@ -60,17 +88,19 @@ zinit wait lucid for \
 	OMZL::grep.zsh \
 	OMZL::key-bindings.zsh \
 	OMZL::spectrum.zsh \
-	OMZL::termsupport.zsh \
-    atload"
-        alias gcd='gco dev'
-    " \
+	OMZL::termsupport.zsh 
+
+zinit wait lucid for \
 	OMZP::git \
     OMZP::extract \
     OMZP::systemd/systemd.plugin.zsh \
     OMZP::sudo/sudo.plugin.zsh \
     OMZP::pip/pip.plugin.zsh \
     OMZP::pyenv/pyenv.plugin.zsh \
-    OMZP::nvm/nvm.plugin.zsh 
+    OMZP::nvm/nvm.plugin.zsh \
+    OMZP::rbenv/rbenv.plugin.zsh \
+    OMZP::thefuck/thefuck.plugin.zsh \
+    OMZP::docker/_docker \
 
 # ============================================================================= #
 # *** ➜ ➜ ➜ [PLUGINS]
@@ -79,54 +109,68 @@ zinit wait lucid for \
 # These plugins should be loaded after ohmyzsh plugins
 
 zinit wait lucid for \
-    light-mode atinit"ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20" atload"_zsh_autosuggest_start" \
-        zsh-users/zsh-autosuggestions \
-    light-mode atinit"
-        typeset -gA FAST_HIGHLIGHT;
-        FAST_HIGHLIGHT[git-cmsg-len]=100;
-        zpcompinit;
-        zpcdreplay;
-    " \
-        zdharma/fast-syntax-highlighting \
-    light-mode blockf atpull'zinit creinstall -q .' \
-    atinit"
-        zstyle ':completion:*' completer _expand _complete _ignored _approximate
-        zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-        zstyle ':completion:*' menu select=2
-        zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
-        zstyle ':completion:*:descriptions' format '-- %d --'
-        zstyle ':completion:*:processes' command 'ps -au$USER'
-        zstyle ':completion:complete:*:options' sort false
-        zstyle ':fzf-tab:complete:_zlua:*' query-string input
-        zstyle ':completion:*:*:*:*:processes' command 'ps -u $USER -o pid,user,comm,cmd -w -w'
-        zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps --pid=$in[(w)1] -o cmd --no-headers -w -w' --preview-window=down:3:wrap
-        zstyle ':fzf-tab:complete:cd:*' extra-opts --preview=$extract'exa -1 --color=always ${~ctxt[hpre]}$in'
-    " \
-        zsh-users/zsh-completions \
-    bindmap"^R -> ^H" atinit"
-        zstyle :history-search-multi-word page-size 10
-        zstyle :history-search-multi-word highlight-color fg=red,bold
-        zstyle :plugin:history-search-multi-word reset-prompt-protect 1
-    " \
-        zdharma/history-search-multi-word \
-    reset \
-    atclone"local P=${${(M)OSTYPE:#*darwin*}:+g}
-            \${P}sed -i \
-            '/DIR/c\DIR 38;5;63;1' LS_COLORS; \
-            \${P}dircolors -b LS_COLORS > c.zsh" \
-    atpull'%atclone' pick"c.zsh" nocompile'!' \
-    atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' \
-        trapd00r/LS_COLORS \
+    atinit"ZINIT[COMPINIT_OPTS]=-C; zpcompinit; zpcdreplay" \
+    zdharma/fast-syntax-highlighting \
+    atload"!_zsh_autosuggest_start" \
+    zsh-users/zsh-autosuggestions \
+    zdharma/history-search-multi-word
+
+zinit wait"1" lucid for \
     mattberther/zsh-pyenv \
     mafredri/zsh-async \
-    mattmc3/zsh-cd-ls \
     zpm-zsh/ls \
     MichaelAquilina/zsh-you-should-use \
     unixorn/git-extra-commands \
     lukechilds/zsh-better-npm-completion \
-    denysdovhan/gitio-zsh
+    denysdovhan/gitio-zsh 
 
-zinit ice depth=1; zinit light romkatv/powerlevel10k
+zinit wait"2" lucid for \
+    zdharma/declare-zsh \
+    zdharma/zflai \
+    blockf \
+    zdharma/zui \
+        zinit-zsh/zinit-console \
+    trigger-load'!crasis' \
+        zdharma/zinit-crasis \
+    atinit"forgit_ignore='fgi'" \
+        wfxr/forgit
+
+# Recommended Be Loaded Last.
+zinit ice wait'3' blockf lucid atpull'zinit creinstall -q .'
+zinit load zsh-users/zsh-completions
+
+zinit ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+    atpull'%atclone' src"zhook.zsh"; zinit light direnv/direnv
+
+zinit ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!' \
+    zinit light trapd00r/LS_COLORS
+
+zinit ice from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*" \
+    zinit load docker/compose
+
+# rbenv
+# zinit ice has'rbenv' id-as'rbenv' atpull'%atclone' \
+#     atclone"rbenv init - --no-rehash > htlsne/zplugin-rbenv"
+# zinit load zdharma/null
+
+# pyenv
+# zinit ice has'pyenv' id-as'pyenv' atpull'%atclone' \
+#     atclone"pyenv init - --no-rehash > pyenv.plugin.zsh"
+# zinit load zdharma/null
+
+# Semi-graphical .zshrc editor for zinit commands
+#zinit load zdharma/zui
+#zinit ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
+#zinit load zdharma/zplugin-crasis
+
+zinit ice nocd for \
+    load'![[ $MYPROMPT = 1 ]]' \
+    unload'![[ $MYPROMPT != 1 ]]' \
+    depth='1'; zinit light romkatv/powerlevel10k
+
+zinit lucid load'![[ $MYPROMPT = 2 ]]' unload'![[ $MYPROMPT != 2 ]]' \
+    pick"/dev/null" multisrc"{async,pure}.zsh" atload'!prompt_pure_precmd' nocd for \
+        sindresorhus/pure
 # ============================================================================= #
 # *** ➜ ➜ ➜ LOCAL CONFIG
 # ============================================================================= #
@@ -135,5 +179,9 @@ zinit is-snippet for \
 # ============================================================================= #
 # *** ➜ ➜ ➜ p10k PROMPT
 # ============================================================================= #
-source "$DOTFILES/zsh/themes/p10k"
-
+if [ "$MYPROMPT" = 1 ]; then; source "$DOTFILES/zsh/themes/p10k"; fi
+#if [[ "$PROFILE_STARTUP" == true ]]; then
+#    unsetopt xtrace
+#    exec 2>&3 3>&-
+#    zprof > ~/zshprofile$(date +'%s')
+#fi

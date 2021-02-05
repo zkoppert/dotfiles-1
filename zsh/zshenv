@@ -12,10 +12,12 @@ export EMAIL='sall@w-ss.io'
 export GITHUB_USER='ss-o'
 export GITLAB_USER='ss-o'
 export SSH_KEY_PATH="$HOME/.ssh/id_rsa"
-export GPG_TTY=$(tty)
+export GPG_TTY="$(tty)"
 export XDG_CONFIG_HOME="${HOME}/.config"
-export XDG_RUNTIME_DIR=/run/user/$(id -u)
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:=$HOME/.cache}"
+export XDG_RUNTIME_DIR='/run/user/$(id -u)'
 
+[ -d "$DOTFILES/bin" ] && export DOTFILES_BIN="$DOTFILES/bin"
 [ -d "$HOME/go" ] && export GOPATH="$HOME/go"
 [ -d "$HOME/.pyenv" ] && export PYENV_ROOT="$HOME/.pyenv"
 [ -d "$HOME/.nvm" ] && export NVM_DIR="$HOME/.nvm"
@@ -73,8 +75,8 @@ if [ -d "/usr/local/bin" ]; then
     export PATH="$PATH:/usr/local/bin"
 fi
 
-if [ -d "$HOME/.dotfiles/bin" ]; then
-    export PATH="$PATH:$HOME/.dotfiles/bin"
+if [ -d "$DOTFILES_BIN" ]; then
+    export PATH="$PATH:$DOTFILES_BIN"
 fi
 
 if [ -d "$GOPATH/bin" ]; then
