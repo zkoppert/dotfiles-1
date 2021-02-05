@@ -2,5 +2,7 @@
 config/micro/backups
 config/micro/buffers
 ##
+log.txt
+##
 #.vscode
 #.vscode.workspace
