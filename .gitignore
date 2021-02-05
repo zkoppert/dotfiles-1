@@ -1,6 +1,6 @@
 ##
-config/micro/backups/*
-config/micro/buffers/*
+config/micro/backups
+config/micro/buffers
 ##
 #.vscode
 #.vscode.workspace
