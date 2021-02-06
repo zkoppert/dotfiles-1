@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 DO_MOTTO() {
     tput bold
     tput setaf 1
