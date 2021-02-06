@@ -4,12 +4,12 @@ trap '' SIGINT SIGQUIT SIGTERM
 #  ➜ ➜ ➜ CONFIG
 # ============================================================================= #
 DOSYNC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ ! -f "$DOTFILES/lib/.utils/utilities.sh" ]; then
-    wget https://raw.githubusercontent.com/ss-o/library/master/utilities.sh -O "$DOTFILES/lib/.utils/utilities.sh"
-    chmod +x "$DOTFILES/lib/.utils/utilities.sh"
+if [ ! -f "$HOME/.dotfiles/lib/.utils/utilities.sh" ]; then
+    wget https://raw.githubusercontent.com/ss-o/library/master/utilities.sh -O "$HOME/.dotfiles/lib/.utils/utilities.sh"
+    chmod +x "$HOME.dotfiles/lib/.utils/utilities.sh"
 else
     # shellcheck source=/dev/null
-    . "$DOTFILES/$UTILITIES_FILE"
+    . "$HOME.dotfiles/lib/.utils/utilities.sh"
 fi
 # ============================================================================= #
 #  ➜ ➜ ➜ VARIABLES
