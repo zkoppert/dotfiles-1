@@ -1,3 +1,11 @@
+# ============================================================================= #
+# *** ➜ ➜ ➜ [SSO] 
+# ============================================================================= #
+export DOTFILES="$HOME/.dotfiles"
+fpath+=( "$DOTFILES/zsh/functions" )
+    for func in $DOTFILES/zsh/functions/*; do
+        autoload -Uz ${func:t}
+    done
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -9,61 +17,34 @@ fi
 #    exec 3>&2 2>$HOME/startlog.$$
 #    setopt xtrace prompt_subst
 #fi
-_1st_found() {
-    for cmd in "$@"; do
-        if type "$cmd" &>/dev/null; then
-            printf "%s" "${cmd}"
-            break
-        fi
-    done
-}
-for file in "${NVM_DIR}/nvm.sh" \
-            "${NVM_DIR}/bash_completion" \
-            "${HOME}/.zsh/prompts.zsh" \
-            "${HOME}/.zsh/aliases.zsh" \
-            "${HOME}/.zsh/set_history.zsh" \
-            "${HOME}/.zsh/zinit.zsh" \
-            "${HOME}/.zsh/completions.zsh" \
-            "${HOME}/.zsh/other/command-not-found.zsh" \
-            "${HOME}/.local/bin/virtualenvwrapper_lazy.sh"
-do
-    [ -s "${file}" ] && source "${file}"
-done
-# Automatically list directory contents on `cd`.
-auto-ls () { ls; }
-[[ ${chpwd_functions[(r)auto-ls]} == auto-ls ]] || chpwd_functions=( auto-ls $chpwd_functions )
-# ============================================================================= #
-# *** ➜ ➜ ➜ VARIABLES
-# ============================================================================= #
-export DOTFILES="$HOME/.dotfiles"
 export ZSH_HOME="$HOME/.zsh"
 export ZINIT_HOME="$ZSH_HOME/.zinit"
-export EDITOR=micro
-export SYSTEMD_EDITOR=${EDITOR}
-export GIT_DISCOVERY_ACROSS_FILESYSTEM=true # etckeeper on bedrock
+export EDITOR='micro'
+export SYSTEMD_EDITOR="${EDITOR}"
+export GIT_DISCOVERY_ACROSS_FILESYSTEM='true' # etckeeper on bedrock
 #CURRENT_DIR=${0:a:h}
 # 1 = powerlevel10k
-MYPROMPT=1 
-unset -f _1st_found
+MYPROMPT='1'
 # ============================================================================= #
 # *** ➜ ➜ ➜ ZINIT [INSTALLER]
 # ============================================================================= #
-if [[ ! -f $ZSH_HOME/.zinit/bin/zinit.zsh ]]; then
+if [[ ! -f "$ZINIT_HOME/bin/zinit.zsh" ]]; then
     print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
     command mkdir -p "$ZSH_HOME/.zinit" && command chmod g-rwX "$ZSH_HOME/.zinit"
     command git clone https://github.com/zdharma/zinit "$ZSH_HOME/.zinit/bin" && \
         print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
         print -P "%F{160}▓▒░ The clone has failed.%f%b"
 fi
-source "$ZSH_HOME/.zinit/bin/zinit.zsh"
+source "${ZINIT_HOME}/bin/zinit.zsh"
+for src_files in "${NVM_DIR}/nvm.sh" \
+            "${NVM_DIR}/bash_completion"; do
+    [ -s "${src_files}" ] && source "${src_files}"
+done
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 module_path+=( "${HOME}/.zsh/.zinit/bin/zmodules/Src" )
 zmodload zdharma/zplugin &>/dev/null
-fpath+=( "$DOTFILES/zsh/functions" )
-# Functions to make configuration less verbose
-# zt() : First argument is a wait time and suffix, ie "0a". Anything that doesn't match will be passed as if it were an ice mod. Default ices depth'3' and lucid
-#zt(){ zinit depth'3' lucid ${1/#[0-9][a-c]/wait"${1}"} "${@:2}"; }
+typeset -gU cdpath fpath path
 # ============================================================================= #
 # *** ➜ ➜ ➜ OH-MY-ZSH [LIBRARY] [PLUGINS] 
 # ============================================================================= #
@@ -94,6 +75,7 @@ zinit wait lucid for \
 	OMZP::git \
     OMZP::extract \
     OMZP::systemd/systemd.plugin.zsh \
+    OMZP::taskwarrior/taskwarrior.plugin.zsh \
     OMZP::sudo/sudo.plugin.zsh \
     OMZP::pip/pip.plugin.zsh \
     OMZP::pyenv/pyenv.plugin.zsh \
@@ -101,6 +83,17 @@ zinit wait lucid for \
     OMZP::rbenv/rbenv.plugin.zsh \
     OMZP::thefuck/thefuck.plugin.zsh \
     OMZP::docker/_docker \
+        as'completion' \
+    OMZP::cargo/_cargo \
+        as'completion' \
+    OMZP::minikube/minikube.plugin.zsh \
+        as'completion' \
+    OMZP::direnv/direnv.plugin.zsh \
+    OMZP::gcloud/gcloud.plugin.zsh \
+    OMZP::gpg-agent/gpg-agent.plugin.zsh \
+    OMZP::ssh-agent/ssh-agent.plugin.zsh \
+    OMZP::nmap/nmap.plugin.zsh
+
 
 # ============================================================================= #
 # *** ➜ ➜ ➜ [PLUGINS]
@@ -116,31 +109,28 @@ zinit wait lucid for \
     zdharma/history-search-multi-word
 
 zinit wait"1" lucid for \
-    mattberther/zsh-pyenv \
     mafredri/zsh-async \
     zpm-zsh/ls \
     MichaelAquilina/zsh-you-should-use \
     unixorn/git-extra-commands \
     lukechilds/zsh-better-npm-completion \
-    denysdovhan/gitio-zsh 
+    denysdovhan/gitio-zsh \
+    mattberther/zsh-rbenv \
+    mattberther/zsh-pyenv
 
-zinit wait"2" lucid for \
-    zdharma/declare-zsh \
-    zdharma/zflai \
-    blockf \
-    zdharma/zui \
-        zinit-zsh/zinit-console \
-    trigger-load'!crasis' \
-        zdharma/zinit-crasis \
-    atinit"forgit_ignore='fgi'" \
-        wfxr/forgit
+#zinit wait"2" lucid for \
+#    zdharma/declare-zsh \
+#    zdharma/zflai \
+#    blockf \
+#    zdharma/zui \
+#        zinit-zsh/zinit-console \
+#    trigger-load'!crasis' \
+#        zdharma/zinit-crasis \
+#    atinit"forgit_ignore='fgi'" \
+#        wfxr/forgit
 
-# Recommended Be Loaded Last.
-#zinit ice wait'3' blockf lucid atpull'zinit creinstall -q .'
-#zinit load zsh-users/zsh-completions
 zinit wait'2' lucid atload"zicompinit; zicdreplay" blockf for \
     zsh-users/zsh-completions
-
 
 zinit ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
     atpull'%atclone' src"zhook.zsh"; zinit light direnv/direnv
@@ -151,23 +141,10 @@ zinit ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" n
 zinit ice from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*" \
     zinit load docker/compose
 
-
-
-
-# rbenv
-# zinit ice has'rbenv' id-as'rbenv' atpull'%atclone' \
-#     atclone"rbenv init - --no-rehash > htlsne/zplugin-rbenv"
-# zinit load zdharma/null
-
-# pyenv
-# zinit ice has'pyenv' id-as'pyenv' atpull'%atclone' \
-#     atclone"pyenv init - --no-rehash > pyenv.plugin.zsh"
-# zinit load zdharma/null
-
 # Semi-graphical .zshrc editor for zinit commands
-#zinit load zdharma/zui
-#zinit ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
-#zinit load zdharma/zplugin-crasis
+zinit load zdharma/zui
+zinit ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cras*]} ]]'
+zinit load zdharma/zplugin-crasis
 
 zinit ice for \
     load'![[ $MYPROMPT = 1 ]]' \

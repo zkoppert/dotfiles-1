@@ -1,0 +1,8 @@
+_1st_found() {
+    for cmd in "$@"; do
+        if type "$cmd" &>/dev/null; then
+            printf "%s" "${cmd}"
+            break
+        fi
+    done
+}
