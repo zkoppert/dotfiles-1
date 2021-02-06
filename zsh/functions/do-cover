@@ -1,24 +1,13 @@
-DO_COVER() {
-    tput bold
-    tput setaf 1
-    echo "--------------------------------------" | nms -asf blue
-    figlet "Anonymous" | nms -asf red || return 0
-    tput sgr0
-    echo "[Press Any Key]" | nms -af blue
-    echo "[➜ ➜ ➜ ➜ ➜ ➜ ➜ ➜ ➜]" | nms -f blue
-    DO_MOTTO
-    MINI_SYS_INFO
-}
 DO_MOTTO() {
     tput bold
     tput setaf 1
-    echo "                  Who Speak Out Against..." | nms -asf red
+    echo "                    Who Speak Out Against..." | nms -asf red
 
     tput bold
     echo "- Will Be silenced" | nms -asf white
-    echo "                  Those Who Lie..." | nms -asf red
+    echo "                    Those Who Lie..." | nms -asf red
     tput bold
-    echo "- Will Vanish." | nms -asf white
+    echo "- Will Vanish" | nms -asf white
     tput bold
     tput setaf 2
     sleep 2
@@ -33,7 +22,6 @@ DO_MOTTO() {
     tput sgr0
 }
 MINI_SYS_INFO() {
-    DO_MOTTO
     upSeconds="$(/usr/bin/cut -d. -f1 /proc/uptime)"
     secs="$((upSeconds % 60))"
     mins="$((upSeconds / 60 % 60))"
@@ -51,4 +39,14 @@ $(tput sgr0)- Memory.............: $(free | grep Mem | awk '{print $3/1024}') MB
 $(tput sgr0)- Load Averages......: ${one}, ${five}, ${fifteen} (1, 5, 15 min)
 $(tput sgr0)- Running Processes..: $(ps ax | wc -l | tr -d " ")
 $(tput sgr0)"
+}
+do-cover() {
+    tput bold
+    tput setaf 1
+    figlet "Anonymous" | nms -asf red || return 0
+    tput sgr0
+    echo "[Press Any Key]" | nms -af blue
+    echo "➜ ➜ ➜ ➜ ➜ ➜ ➜ ➜ ➜" | nms -f blue
+    DO_MOTTO
+    MINI_SYS_INFO
 }
