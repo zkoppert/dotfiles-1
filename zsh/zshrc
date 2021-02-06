@@ -1,23 +1,20 @@
 # ============================================================================= #
-# *** ➜ ➜ ➜ [SSO] 
-# ============================================================================= #
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 export DOTFILES="$HOME/.dotfiles"
 fpath+=( "$DOTFILES/zsh/functions" )
     for func in $DOTFILES/zsh/functions/*; do
         autoload -Uz ${func:t}
     done
-# ============================================================================= #
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+PROFILE_STARTUP='false'
+if [[ "$PROFILE_STARTUP" == true ]]; then
+    zmodload zsh/zprof
+    # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
+    PS4=$'%D{%M%S%.} %N:%i> '
+    exec 3>&2 2>$HOME/startlog.$$
+    setopt xtrace prompt_subst
 fi
-#PROFILE_STARTUP=false
-#if [[ "$PROFILE_STARTUP" == true ]]; then
-#    zmodload zsh/zprof
-#    # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
-#    PS4=$'%D{%M%S%.} %N:%i> '
-#    exec 3>&2 2>$HOME/startlog.$$
-#    setopt xtrace prompt_subst
-#fi
 export ZSH_HOME="$HOME/.zsh"
 export ZINIT_HOME="$ZSH_HOME/.zinit"
 export EDITOR='micro'
@@ -36,7 +33,7 @@ if [[ ! -f "$ZINIT_HOME/bin/zinit.zsh" ]]; then
         print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
         print -P "%F{160}▓▒░ The clone has failed.%f%b"
 fi
-source "${ZINIT_HOME}/bin/zinit.zsh"
+source "$ZINIT_HOME/bin/zinit.zsh"
 for src_files in "${NVM_DIR}/nvm.sh" \
             "${NVM_DIR}/bash_completion"; do
     [ -s "${src_files}" ] && source "${src_files}"
@@ -46,7 +43,7 @@ autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 module_path+=( "${HOME}/.zsh/.zinit/bin/zmodules/Src" )
 zmodload zdharma/zplugin &>/dev/null
-typeset -gU cdpath fpath path
+[[ ${chpwd_functions[(r)auto-ls]} == auto-ls ]] || chpwd_functions=( auto-ls $chpwd_functions )
 # ============================================================================= #
 # *** ➜ ➜ ➜ OH-MY-ZSH [LIBRARY] [PLUGINS] 
 # ============================================================================= #
@@ -164,8 +161,8 @@ zinit is-snippet for \
 # *** ➜ ➜ ➜ p10k PROMPT
 # ============================================================================= #
 if [ "$MYPROMPT" = 1 ]; then; source "$DOTFILES/zsh/themes/p10k"; fi
-#if [[ "$PROFILE_STARTUP" == true ]]; then
-#    unsetopt xtrace
-#    exec 2>&3 3>&-
-#    zprof > ~/zshprofile$(date +'%s')
-#fi
+if [[ "$PROFILE_STARTUP" == true ]]; then
+    unsetopt xtrace
+    exec 2>&3 3>&-
+    zprof > ~/zshprofile$(date +'%s')
+fi
