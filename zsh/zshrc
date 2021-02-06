@@ -6,6 +6,7 @@ fpath+=( "$DOTFILES/zsh/functions" )
     for func in $DOTFILES/zsh/functions/*; do
         autoload -Uz ${func:t}
     done
+# ============================================================================= #
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -40,6 +41,7 @@ for src_files in "${NVM_DIR}/nvm.sh" \
             "${NVM_DIR}/bash_completion"; do
     [ -s "${src_files}" ] && source "${src_files}"
 done
+# ============================================================================= #
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 module_path+=( "${HOME}/.zsh/.zinit/bin/zmodules/Src" )
