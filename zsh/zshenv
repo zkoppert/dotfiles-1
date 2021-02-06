@@ -16,13 +16,12 @@ export GPG_TTY="$(tty)"
 
 export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:=$HOME/.cache}"
-export XDG_RUNTIME_DIR='/run/user/$(id -u)'
+#export XDG_RUNTIME_DIR='/run/user/$(id -u)'
 
 export DOTFILES_BIN="$DOTFILES/bin"
 export GOPATH="$HOME/go"
 export PYENV_ROOT="$HOME/.pyenv"
 export NVM_DIR="$HOME/.nvm"
-export CLOUDSDK_HOME="/opt/google-cloud-sdk"
 
 # https://github.com/sorin-ionescu/prezto/blob/master/runcoms/zshenv
 # Ensure that a non-login, non-interactive shell has a defined environment.
