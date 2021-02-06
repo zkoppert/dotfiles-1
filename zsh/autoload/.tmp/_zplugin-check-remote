@@ -1,7 +1,0 @@
-ORI_DIR=$(pwd)
-cd $ZINIT;
-if git remote -v | grep origin | grep zplugin ; then
-    git remote set-url origin https://github.com/zdharma/zinit.git
-fi
-cd $ORI_DIR
-unset ORI_DIR
