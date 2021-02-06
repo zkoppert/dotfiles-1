@@ -4,6 +4,13 @@ trap '' SIGINT SIGQUIT SIGTERM
 #  ➜ ➜ ➜ CONFIG
 # ============================================================================= #
 DOSYNC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ ! -f "$DOTFILES/lib/.utils/utilities.sh" ]; then
+    wget https://raw.githubusercontent.com/ss-o/library/master/utilities.sh -O "$DOTFILES/lib/.utils/utilities.sh"
+    chmod +x "$DOTFILES/lib/.utils/utilities.sh"
+else
+    # shellcheck source=/dev/null
+    . "$DOTFILES/$UTILITIES_FILE"
+fi
 # ============================================================================= #
 #  ➜ ➜ ➜ VARIABLES
 # ============================================================================= #
@@ -14,7 +21,7 @@ SYNCFILE="$DOTFILES/sync.config"
 BACKUP_DIR="$HOME/.backup"
 GITOPT="-q"
 GITSUB="--quiet"
-GITSUBOPT="--quiet"
+#GITSUBOPT="--quiet"
 INSTALL_FONTS="${INSTALL_FONTS:-no}"
 INSTALL_DOSYNC="${INSTALL_DOSYNC:-no}"
 INSTALL_NOTEBOOK="${INSTALL_NOTEBOOK:-no}"
@@ -38,34 +45,6 @@ PRE_CHECKS() {
         echo "Dotfiles directory different as expected"
     fi
 }
-NO_ROOT() {
-    tput bold
-    tput setaf 1
-    if [[ $USER == "root" ]]; then
-        ERROR "Do not run as root"
-    fi
-    tput sgr0
-}
-ERROR() {
-    tput bold
-    tput setaf 1
-    echo "$@" >&2
-    tput sgr0
-    exit 1
-}
-SUCCESS() {
-    tput bold
-    tput setaf 2
-    echo "Success!"
-    tput sgr0
-}
-FINISHED() {
-    tput bold
-    tput setaf 8
-    echo "$@"
-    tput sgr0
-    exit 0
-}
 HAS_TERMINAL() {
     [ -t 0 ]
 }
@@ -81,7 +60,6 @@ IS_GIT() {
         exit 1
     fi
 }
-
 USAGE() {
     tput sgr0
     tput bold
@@ -102,7 +80,6 @@ USAGE() {
     -H | --help       - Show this help message
 EOF
 }
-
 RM_BROKEN_LINKS() {
     tput setaf 3
     #    if [[ "$VERBOSE" == True ]]; then
@@ -115,7 +92,6 @@ RM_BROKEN_LINKS() {
     find "$HOME/.config" -maxdepth 1 -name "*" -type l | while read -r f; do if [ ! -e "$f" ]; then rm -f "$f"; fi; done
     tput sgr0
 }
-
 INIT_LOCAL() {
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     IS_GIT
@@ -123,7 +99,6 @@ INIT_LOCAL() {
     git submodule $GITSUB update --init --recursive
     cd || return 0
 }
-
 GET_GIT_ORIGIN() {
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     if [[ -d .git ]]; then
@@ -131,21 +106,19 @@ GET_GIT_ORIGIN() {
     fi
     cd || return 0
 }
-
 GIT_PULL() {
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     IS_GIT
     echo "Pulling latest changes from $ORIGIN"
     git pull $GITOPT
-    echo "Pulling latest changes for submodules"
+    #echo "Pulling latest changes for submodules"
     # Required if a submodule origin changed
-    git submodule $GITSUBOPT sync
-    git submodule $GITSUBOPT foreach --recursive git fetch
-    git submodule $GITSUBOPT update --init --recursive
+    #git submodule $GITSUBOPT sync
+    #git submodule $GITSUBOPT foreach --recursive git fetch
+    #git submodule $GITSUBOPT update --init --recursive
     cd || return 0
 }
-
 GIT_COMMIT() {
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
@@ -153,7 +126,6 @@ GIT_COMMIT() {
     git commit -a $GITOPT
     cd || return 0
 }
-
 GIT_PUSH() {
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
@@ -161,21 +133,18 @@ GIT_PUSH() {
         git push $GITOPT
     cd || return 0
 }
-
 GIT_ADD() {
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     echo "Adding all changes"
     git add .
     cd || return 0
 }
-
 GIT_CHECK_ALL() {
     GET_GIT_ORIGIN
     GIT_ADD
     GIT_COMMIT
     GIT_PUSH
 }
-
 GET_SYNCFILE() {
     if [[ ! -s $SYNCFILE ]]; then
         if [[ -s "$DOTFILES/sync.config" ]]; then
@@ -186,7 +155,6 @@ GET_SYNCFILE() {
         fi
     fi
 }
-
 GET_FILES_LIST() {
     SRCFILES="$(sed -n '/\[files\]/,/\[endfiles\]/p' "$SYNCFILE" | grep -v '^\[.*files]' | grep -v '^#')"
     CONFIG_FILES="$(sed -n '/\[configfiles\]/,/\[endconfigfiles\]/p' "$SYNCFILE" | grep -v '^\[.*configfiles]' | grep -v '^#')"
@@ -195,10 +163,9 @@ GET_FILES_LIST() {
         exit 1
     fi
     if [[ -z "$CONFIG_FILES" ]]; then
-        echo "Nothing defined in $DOTFILES/sync.config to sync"
+        echo "No files specified to sync from $DOTFILES/config"
     fi
 }
-
 GET_FILE() {
     srcfile="$(echo "$file" | awk -F: '{print $1}')"
     dstfile="$(echo "$file" | awk -F: '{print $2}')"
@@ -218,7 +185,6 @@ GET_FILE() {
     fi
     CONFIG_DOTFILE="$HOME/.config/$dstconfig"
 }
-
 GET_OPTIONS() {
     if [ "$NO_TTY" = yes ]; then
         echo "No tty"
@@ -232,12 +198,9 @@ GET_OPTIONS() {
         DO_ACTION
     fi
     if [ "$INSTALL_NOTEBOOK" = yes ]; then
-        if ! NO_ROOT; then ##!!! Possible breakpoint.
-            echo "Installing NoteBook (nb.sh)"
-            sudo wget https://raw.github.com/xwmx/nb/master/nb -O /usr/local/bin/nb &&
-                sudo chmod +x /usr/local/bin/nb &&
-                sudo nb completions install --download
-        fi
+        builtin cd "$DOTFILES/lib/install" || ERROR
+        ./nb.sh || ERROR "Failed to install"
+        SUCCESS
     fi
     if [ "$INSTALL_MICRO" = yes ]; then
         echo "Installing Micro Editor"
@@ -295,7 +258,6 @@ DO_OPTIONS() {
     GET_OPTIONS "$@"
     DO_ACTION
 }
-
 DO_SYNC() {
     RM_BROKEN_LINKS
     GET_SYNCFILE
@@ -342,7 +304,6 @@ DO_SYNC() {
     done
     tput sgr0
 }
-
 DO_ACTION() {
     tput bold
     tput setaf 2
@@ -367,7 +328,6 @@ DO_ACTION() {
     esac
     tput sgr0
 }
-
 MAIN() {
     NO_ROOT
     tput setaf 5
