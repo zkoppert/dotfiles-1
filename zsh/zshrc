@@ -24,7 +24,6 @@ fpath+=( "${DOTFILES}/zsh/functions/" )
     done
 # A binary Zsh module which transparently and automatically compiles sourced scripts
 module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
-[[ ${chpwd_functions[(r)auto-ls]} == auto-ls ]] || chpwd_functions=( auto-ls $chpwd_functions )
 # ============================================================================= #
 turbo0()   { zinit ice wait"0a" lucid             "${@}"; }
 turbo1()   { zinit ice wait"0b" lucid             "${@}"; }
@@ -33,6 +32,8 @@ zcommand() { zinit ice wait"0b" lucid as"command" "${@}"; }
 zload()    { zinit load                           "${@}"; }
 zlight()   { zinit light                          "${@}"; }
 zsnippet() { zinit snippet                        "${@}"; }
+auto-ls()  { ls; }
+[[ ${chpwd_functions[(r)auto-ls]} == auto-ls ]] || chpwd_functions=( auto-ls $chpwd_functions )
 # ============================================================================= #
 # *** ➜ ➜ ➜ OH-MY-ZSH
 # ============================================================================= #
@@ -60,7 +61,7 @@ zsnippet OMZ::plugins/sudo/sudo.plugin.zsh
 
 zinit atload"zpcompinit" lucid as"completion" for OMZ::plugins/docker/_docker
 # ============================================================================= #
-turbo0 for \
+turbo0; zinit light-mode for \
 mafredri/zsh-async \
 MichaelAquilina/zsh-you-should-use \
 zpm-zsh/ls \

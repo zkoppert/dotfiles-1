@@ -1,2 +1,0 @@
-# Automatically list directory contents on `cd`.
-auto-ls() { ls; }
