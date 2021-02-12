@@ -22,6 +22,8 @@ fpath+=( "${DOTFILES}/zsh/functions/" )
     for func in $DOTFILES/zsh/functions/*; do
         autoload -Uz ${func:t}
     done
+unset func
+fpath+=( "${DOTFILES}/bin/" )
 # A binary Zsh module which transparently and automatically compiles sourced scripts
 module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
 # ============================================================================= #

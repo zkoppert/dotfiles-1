@@ -11,7 +11,6 @@ export SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 export GPG_TTY="$(tty)"
 export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:=$HOME/.cache}"
-export DOTFILES_BIN="$DOTFILES/bin"
 export GOPATH="$HOME/go"
 
 #export XDG_RUNTIME_DIR="/run/user/$(id -u)"
@@ -21,12 +20,7 @@ if [ -z "$DOTFILES" ]; then
 fi
 
 # Construct $PATH
-for i in "$HOME/.gem/ruby/**/bin" \
-    "$DOTFILES_BIN" \
-    '/home/linuxbrew/.linuxbrew/bin' \
-    '/usr/local/bin' \
-    '/usr/sbin' \
-    "$HOME/.local/bin" \
+for i in "$HOME/.local/bin" \
     "$HOME/go/bin" \
     "$HOME/.yarn/bin" \
     "$HOME/.cabal/bin" \
@@ -35,7 +29,10 @@ for i in "$HOME/.gem/ruby/**/bin" \
     "$HOME/.luarocks/bin" \
     "$HOME/.ruby/gems/bin" \
     "$HOME/.bin" \
-    "$HOME/bin"; do
+    "$HOME/bin" \
+    '/home/linuxbrew/.linuxbrew/bin' \
+    '/usr/local/bin' \
+    '/usr/sbin'; do
     if [ -d "$i" ]; then
         case :$PATH: in
         *:$i:*) ;;
