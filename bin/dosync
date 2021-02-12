@@ -4,13 +4,6 @@ trap '' SIGINT SIGQUIT SIGTERM
 #  ➜ ➜ ➜ CONFIG
 # ============================================================================= #
 DOSYNC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ ! -f "$HOME/.dotfiles/lib/.utils/utilities.sh" ]; then
-    wget https://raw.githubusercontent.com/ss-o/library/master/utilities.sh -O "$HOME/.dotfiles/lib/.utils/utilities.sh"
-    chmod +x "$HOME.dotfiles/lib/.utils/utilities.sh"
-else
-    # shellcheck source=/dev/null
-    . "$HOME/.dotfiles/lib/.utils/utilities.sh"
-fi
 # ============================================================================= #
 #  ➜ ➜ ➜ VARIABLES
 # ============================================================================= #
@@ -29,6 +22,12 @@ NO_TTY="${NOTTY:-no}"
 PIPED="${PIPED:-no}"
 # CHSHZSH="chsh -s $(which zsh)"
 # RELOAD_SHELL="exec $SHELL -l"
+if [ ! -f "$HOME/.dotfiles/lib/toolbox/utilities.sh" ]; then
+git submodule update --init --recursive "$DOTFILES/lib/toolbox"
+else
+    # shellcheck source=/dev/null
+    . "$DOTFILES/lib/toolbox/utilities.sh"
+fi
 # ============================================================================= #
 #  ➜ ➜ ➜ FUNCTIONS
 # ============================================================================= #
@@ -114,11 +113,11 @@ GIT_PULL() {
     IS_GIT
     echo "Pulling latest changes from $ORIGIN"
     git pull $GITOPT
-    #echo "Pulling latest changes for submodules"
+    echo "Pulling latest changes for submodules"
     # Required if a submodule origin changed
-    #git submodule $GITSUBOPT sync
-    #git submodule $GITSUBOPT foreach --recursive git fetch
-    #git submodule $GITSUBOPT update --init --recursive
+    git submodule $GITSUBOPT sync
+    git submodule $GITSUBOPT foreach --recursive git fetch
+    git submodule $GITSUBOPT update --init --recursive
     cd || return 0
 }
 GIT_COMMIT() {
