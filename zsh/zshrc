@@ -24,7 +24,6 @@ fpath+=( "${DOTFILES}/zsh/functions/" )
     done
 unset func
 fpath+=( "${DOTFILES}/bin/" )
-# A binary Zsh module which transparently and automatically compiles sourced scripts
 module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
 # ============================================================================= #
 turbo0()   { zinit ice wait"0a" lucid             "${@}"; }
@@ -114,15 +113,14 @@ pyenv
 turbo1; zload lukechilds/zsh-nvm
 turbo1; zsnippet "$DOTFILES/zsh/plugins/zsh-rbenv.plugin.zsh"
 
-turbo1 as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+turbo1 for \
+ as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' 
     atpull'%atclone' src"zhook.zsh"; zlight 'direnv/direnv'
-
-turbo1 from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*" \
+ from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*" 
     zlight 'docker/compose'
-
-turbo1 from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat" \
+ from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat" 
     zlight 'sharkdp/bat'
-# BAT-EXTRAS
+
 turbo1 as"program" pick"src/batgrep.sh" 
 turbo1 as"program" pick"src/batdiff.sh"
 zlight 'eth-p/bat-extras' 
