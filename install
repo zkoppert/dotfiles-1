@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+trap '' SIGINT SIGQUIT SIGTERM
+# ============================================================================= #
+#  ➜ ➜ ➜ INSTALL
+# ============================================================================= #
+if [ -z "$DOTFILES" ]; then
+    DOTFILES="$HOME/.dotfiles"
+fi
+if [ -z "$TERM" ]; then
+    TERM='xterm-256color'
+fi
+INSTALL() {
+    tput bold
+    tput setaf 2
+    echo "Installing >>"
+    tput setaf 4
+    "${DOTFILES}/lib/.DoSync" "--dosync" || exit 1
+    exit 0
+    tput sgr0
+}
+while true; do
+    INSTALL "${@}"
+done
+unset INSTALL

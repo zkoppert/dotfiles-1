@@ -1,0 +1,8 @@
+##
+config/micro/backups
+config/micro/buffers
+##
+log.txt
+##
+.vscode/
+.dotfiles.code-workspace

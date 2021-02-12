@@ -1,0 +1,60 @@
+# https://blog.patshead.com/2011/04/improve-your-oh-my-zsh-startup-time-maybe.html
+skip_global_compinit=1
+# http://disq.us/p/f55b78
+setopt noglobalrcs
+
+export FULL_NAME='Salvydas Lukosius'
+export EMAIL='sall@w-ss.io'
+export GITHUB_USER='ss-o'
+export GITLAB_USER='ss-o'
+export SSH_KEY_PATH="$HOME/.ssh/id_rsa"
+export GPG_TTY="$(tty)"
+export XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:=$HOME/.cache}"
+export DOTFILES_BIN="$DOTFILES/bin"
+export GOPATH="$HOME/go"
+
+
+#export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+
+if [ -z "$DOTFILES" ]; then
+    export DOTFILES="$HOME/.dotfiles"
+fi
+
+# Construct $PATH
+for i in "$HOME/.gem/ruby/**/bin" \
+    "$DOTFILES_BIN" \
+    '/home/linuxbrew/.linuxbrew/bin' \
+    '/usr/local/bin' \
+    '/usr/sbin' \
+    "$HOME/.local/bin" \
+    "$HOME/go/bin" \
+    "$HOME/.yarn/bin" \
+    "$HOME/.cabal/bin" \
+    "$HOME/.config/composer/vendor/bin" \
+    "$HOME/.composer/vendor/bin" \
+    "$HOME/.luarocks/bin" \
+    "$HOME/.ruby/gems/bin" \
+    "$HOME/.bin" \
+    "$HOME/bin"; do
+    if [ -d "$i" ]; then
+        case :$PATH: in
+        *:$i:*) ;;
+        *)
+            PATH="$i:$PATH"
+            ;;
+        esac
+    fi
+done
+unset i
+if [ -d "$HOME/.cargo/bin" ]; then
+    export PATH="$PATH:$HOME/.cargo/bin"
+    alias exa-grid='exa --long --grid'
+    alias exa-tree='exa --long --tree'
+fi
+
+# https://github.com/sorin-ionescu/prezto/blob/master/runcoms/zshenv
+# Ensure that a non-login, non-interactive shell has a defined environment.
+if [[ ("$SHLVL" -eq 1 && ! -o LOGIN) && -s "${ZDOTDIR:-$HOME}/.zprofile" ]]; then
+    source "${ZDOTDIR/:-$HOME/}/.zprofile"
+fi

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+trap '' SIGINT SIGQUIT SIGTERM
+# ============================================================================= #
+#  ➜ ➜ ➜ DoSync
+# ============================================================================= #
+if [ -z "$DOTFILES" ]; then
+    DOTFILES="$HOME/.dotfiles"
+fi
+dosync() {
+    "${DOTFILES}/lib/.DoSync" "${@}" || exit 1
+    exit 0
+}
+while true; do
+    dosync "${@}"
+done
