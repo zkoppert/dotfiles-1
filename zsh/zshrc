@@ -6,6 +6,8 @@ export DOTFILES="$HOME/.dotfiles"
 export ZSH_HOME="$HOME/.zsh"
 export ZINIT_HOME="$HOME/.zinit"
 MYPROMPT='1'
+export WORKON_HOME=~/.virtualenvs
+source ~/.local/bin/virtualenvwrapper.sh
 # ============================================================================= #
 # *** ➜ ➜ ➜ ZINIT
 # ============================================================================= #
@@ -113,13 +115,14 @@ pyenv
 turbo1; zload lukechilds/zsh-nvm
 turbo1; zsnippet "$DOTFILES/zsh/plugins/zsh-rbenv.plugin.zsh"
 
-turbo1 for \
- as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' 
-    atpull'%atclone' src"zhook.zsh"; zlight 'direnv/direnv'
- from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*" 
-    zlight 'docker/compose'
- from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat" 
-    zlight 'sharkdp/bat'
+turbo1 as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+atpull'%atclone' src"zhook.zsh"; zlight 'direnv/direnv'
+
+turbo1 from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*"
+zlight 'docker/compose'
+
+turbo1 from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat"
+zlight 'sharkdp/bat'
 
 turbo1 as"program" pick"src/batgrep.sh" 
 turbo1 as"program" pick"src/batdiff.sh"

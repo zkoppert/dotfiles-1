@@ -28,11 +28,7 @@ for i in "$HOME/.local/bin" \
     "$HOME/.composer/vendor/bin" \
     "$HOME/.luarocks/bin" \
     "$HOME/.ruby/gems/bin" \
-    "$HOME/.bin" \
-    "$HOME/bin" \
-    '/home/linuxbrew/.linuxbrew/bin' \
-    '/usr/local/bin' \
-    '/usr/sbin'; do
+    "$HOME/.bin"; do
     if [ -d "$i" ]; then
         case :$PATH: in
         *:$i:*) ;;
