@@ -24,10 +24,9 @@ PIPED="${PIPED:-no}"
 # RELOAD_SHELL="exec $SHELL -l"
 if [ ! -f "$HOME/.dotfiles/lib/toolbox/utilities.sh" ]; then
     git submodule update --init --recursive "$DOTFILES/lib/toolbox"
-else
-    # shellcheck source=/dev/null
-    . "$DOTFILES/lib/toolbox/utilities.sh"
 fi
+# shellcheck source=/dev/null
+. "$DOTFILES/lib/toolbox/utilities.sh"
 # ============================================================================= #
 #  ➜ ➜ ➜ FUNCTIONS
 # ============================================================================= #
