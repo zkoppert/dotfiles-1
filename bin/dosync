@@ -14,7 +14,7 @@ SYNCFILE="$DOTFILES/sync.config"
 BACKUP_DIR="$HOME/.backup"
 GITOPT="-q"
 GITSUB="--quiet"
-#GITSUBOPT="--quiet"
+GITSUBOPT="--quiet"
 INSTALL_FONTS="${INSTALL_FONTS:-no}"
 INSTALL_DOSYNC="${INSTALL_DOSYNC:-no}"
 INSTALL_NOTEBOOK="${INSTALL_NOTEBOOK:-no}"
@@ -23,7 +23,7 @@ PIPED="${PIPED:-no}"
 # CHSHZSH="chsh -s $(which zsh)"
 # RELOAD_SHELL="exec $SHELL -l"
 if [ ! -f "$HOME/.dotfiles/lib/toolbox/utilities.sh" ]; then
-git submodule update --init --recursive "$DOTFILES/lib/toolbox"
+    git submodule update --init --recursive "$DOTFILES/lib/toolbox"
 else
     # shellcheck source=/dev/null
     . "$DOTFILES/lib/toolbox/utilities.sh"
@@ -115,9 +115,9 @@ GIT_PULL() {
     git pull $GITOPT
     echo "Pulling latest changes for submodules"
     # Required if a submodule origin changed
-    git submodule $GITSUBOPT sync
-    git submodule $GITSUBOPT foreach --recursive git fetch
-    git submodule $GITSUBOPT update --init --recursive
+    git submodule "$GITSUBOPT" sync
+    git submodule "$GITSUBOPT" foreach --recursive git fetch
+    git submodule "$GITSUBOPT" update --init --recursive
     cd || return 0
 }
 GIT_COMMIT() {
