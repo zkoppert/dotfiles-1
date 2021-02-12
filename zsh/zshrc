@@ -5,24 +5,9 @@ fi
 export DOTFILES="$HOME/.dotfiles"
 export ZSH_HOME="$HOME/.zsh"
 export ZINIT_HOME="$HOME/.zinit"
-export SYSTEMD_EDITOR="${EDITOR}"
-export GIT_DISCOVERY_ACROSS_FILESYSTEM='true' # etckeeper on bedrock
-MYPROMPT='p10k'
-#CURRENT_DIR=${0:a:h}
-for file in "${NVM_DIR}/nvm.sh" \
-            "${NVM_DIR}/bash_completion"
-#            "${HOME}/.zsh/prompts.zsh" \
-#            "${HOME}/.zsh/aliases.zsh" \
-#            "${HOME}/.zsh/set_history.zsh" \
-#            "${HOME}/.zsh/zinit.zsh" \
-#            "${HOME}/.zsh/completions.zsh" \
-#            "${HOME}/.zsh/other/command-not-found.zsh" \
-#            "${HOME}/.local/bin/virtualenvwrapper_lazy.sh"
-do
-    [ -s "${file}" ] && source "${file}"
-done
+MYPROMPT='1'
 # ============================================================================= #
-# *** ➜ ➜ ➜ ZINIT [INSTALLER]
+# *** ➜ ➜ ➜ ZINIT
 # ============================================================================= #
 if [[ ! -f "$ZINIT_HOME/bin/zinit.zsh" ]]; then
     print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
@@ -31,9 +16,6 @@ if [[ ! -f "$ZINIT_HOME/bin/zinit.zsh" ]]; then
         print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
         print -P "%F{160}▓▒░ The clone has failed.%f%b"
 fi; source "$ZINIT_HOME/bin/zinit.zsh"
-# ============================================================================= #
-# *** ➜ ➜ ➜ [CONFIG]
-# ============================================================================= #
 (( ${+_comps} )) && _comps[zinit]=_zinit
 autoload -Uz _zinit
 fpath+=( "${DOTFILES}/zsh/functions/" )
@@ -42,7 +24,6 @@ fpath+=( "${DOTFILES}/zsh/functions/" )
     done
 # A binary Zsh module which transparently and automatically compiles sourced scripts
 module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
-zmodload zdharma/zplugin &>/dev/null
 [[ ${chpwd_functions[(r)auto-ls]} == auto-ls ]] || chpwd_functions=( auto-ls $chpwd_functions )
 # ============================================================================= #
 turbo0()   { zinit ice wait"0a" lucid             "${@}"; }
@@ -53,34 +34,41 @@ zload()    { zinit load                           "${@}"; }
 zlight()   { zinit light                          "${@}"; }
 zsnippet() { zinit snippet                        "${@}"; }
 # ============================================================================= #
+# *** ➜ ➜ ➜ OH-MY-ZSH
+# ============================================================================= #
 setopt promptsubst
 setopt complete_aliases
-# Oh-My-Zsh snippets
-zinit is-snippet for OMZ::lib/directories.zsh
-zinit is-snippet for OMZ::lib/compfix.zsh
-zinit is-snippet for OMZ::lib/completion.zsh
-zinit is-snippet for OMZ::lib/grep.zsh
-zinit is-snippet for OMZ::lib/termsupport.zsh
-zinit is-snippet for OMZ::lib/theme-and-appearance.zsh
-zinit is-snippet for OMZ::lib/key-bindings.zsh
-zinit is-snippet for OMZ::lib/history.zsh
-zinit is-snippet for OMZ::lib/git.zsh
-zinit is-snippet for OMZ::plugins/git/git.plugin.zsh
-zinit is-snippet for OMZ::plugins/ssh-agent/ssh-agent.plugin.zsh
-zinit is-snippet for OMZ::plugins/gpg-agent/gpg-agent.plugin.zsh
-zinit is-snippet for OMZ::plugins/history/history.plugin.zsh
-zinit is-snippet for OMZ::plugins/extract/extract.plugin.zsh
+
+zsnippet OMZ::lib/git.zsh
+zsnippet OMZ::plugins/git/git.plugin.zsh 
+zsnippet OMZ::lib/directories.zsh
+zsnippet OMZ::lib/compfix.zsh
+zsnippet OMZ::lib/grep.zsh
+zsnippet OMZ::lib/termsupport.zsh
+zsnippet OMZ::lib/theme-and-appearance.zsh
+zsnippet OMZ::lib/key-bindings.zsh
+zsnippet OMZ::lib/history.zsh
+zsnippet OMZ::lib/completion.zsh
+zsnippet OMZ::plugins/history/history.plugin.zsh
+zsnippet OMZ::plugins/ssh-agent/ssh-agent.plugin.zsh
+zsnippet OMZ::plugins/gpg-agent/gpg-agent.plugin.zsh
+zsnippet OMZ::plugins/extract/extract.plugin.zsh
+zsnippet OMZ::plugins/npm/npm.plugin.zsh
+zsnippet OMZ::plugins/pip/pip.plugin.zsh
+zsnippet OMZ::plugins/pyenv/pyenv.plugin.zsh
+zsnippet OMZ::plugins/sudo/sudo.plugin.zsh
+
 zinit atload"zpcompinit" lucid as"completion" for OMZ::plugins/docker/_docker
 # ============================================================================= #
-turbo0; zinit for light-mode \
-'zinit-zsh/z-a-patch-dl' \
-'zinit-zsh/z-a-as-monitor' \
-'zinit-zsh/z-a-bin-gem-node' \
-'zinit-zsh/z-a-submods' \
-'zinit-zsh/z-a-rust'
+turbo0 for \
+mafredri/zsh-async \
+MichaelAquilina/zsh-you-should-use \
+zpm-zsh/ls \
+unixorn/git-extra-commands \
+denysdovhan/gitio-zsh
 # ============================================================================= #
 # Additional completion definitions
-turbo0; zload 'lukechilds/zsh-better-npm-completion'
+turbo0 blockf; zload 'lukechilds/zsh-better-npm-completion'
 turbo0 blockf atpull'zinit creinstall -q .'
 zload 'zsh-users/zsh-completions'
 # Don't bind these keys until ready
@@ -94,7 +82,7 @@ __bind_history_keys() {
 turbo0 atload'__bind_history_keys'
 zlight 'zsh-users/zsh-history-substring-search'
 # History search by `Ctrl+R`
-turbo1; zload 'zdharma/history-search-multi-word'
+turbo0; zload 'zdharma/history-search-multi-word'
 # Syntax highlighting
 # (compinit without `-i` spawns warning on `sudo -s`)
 turbo0 atinit"ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zpcdreplay"
@@ -105,32 +93,29 @@ turbo0 atload"_zsh_autosuggest_start"; zload 'zsh-users/zsh-autosuggestions'
 export ZSH_AUTOSUGGEST_USE_ASYNC=1
 export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 # ============================================================================= #
-turbo1; zinit for light-mode \
-'mafredri/zsh-async' \
-'MichaelAquilina/zsh-you-should-use' \
-'zpm-zsh/ls' \
-'unixorn/git-extra-commands' \
-'denysdovhan/gitio-zsh'
+zinit light-mode for \
+zinit-zsh/z-a-patch-dl \
+zinit-zsh/z-a-as-monitor \
+zinit-zsh/z-a-bin-gem-node \
+zinit-zsh/z-a-submods \
+zinit-zsh/z-a-rust
 
-turbo2; zinit pack for \
+turbo1; zinit pack for \
 dircolors-material \
 ls_colors \
 doctoc \
-@asciidoctor
+@asciidoctor \
+fzf \
+pyenv
 
-turbo1; zinit pack"bgn-binary" for fzf
+turbo1; zload lukechilds/zsh-nvm
+turbo1; zsnippet "$DOTFILES/zsh/plugins/zsh-rbenv.plugin.zsh"
 
 turbo1 as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
     atpull'%atclone' src"zhook.zsh"; zlight 'direnv/direnv'
 
 turbo1 from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*" \
     zlight 'docker/compose'
-
-#zinit ice lucid wait"0a" as"program" from"gh-r" mv"lazygit* -> lazygit" atload"alias lg='lazygit'" \
-#    zinit light 'jesseduffield/lazygit'
-
-#zinit ice lucid wait"0a" as"program" from"gh-r" mv"lazydocker* -> lazydocker" atload"alias lg='lazydocker'" \
-#    zinit light 'jesseduffield/lazydocker'
 
 turbo1 from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat" \
     zlight 'sharkdp/bat'
@@ -141,41 +126,25 @@ zlight 'eth-p/bat-extras'
     alias rg=batgrep.sh 
     alias bd=batdiff.sh 
     alias man=batman.sh
-# ============================================================================= #
-# *** ➜ ➜ ➜ [PYENV]
-# ============================================================================= #
-# Download the tarball with the default ice list
-#zplugin pack for pyenv
-# Download the tarball with the bin-gem-node annex-utilizing ice list
-#zplugin pack"bgn" for pyenv
-# Download with the bin-gem-node annex-utilizing ice list FROM GIT REPOSITORY
-zinit pack"bgn" git for pyenv
-# ============================================================================= #
-# *** ➜ ➜ ➜ [NVM]
-# ============================================================================= #
-export NVM_COMPLETION='true'
-export NVM_LAZY_LOAD='true'
-export NVM_AUTO_USE='true'
-export NVM_COLORS='cmgRY'
-zlight lukechilds/zsh-nvm
-# ============================================================================= #
-# *** ➜ ➜ ➜ [RBENV]
-# ============================================================================= #
-zsnippet "$DOTFILES/zsh/plugins/zsh-rbenv.plugin.zsh"
-# ============================================================================= #
-# ============================================================================= #
+
 unset -f turbo0 turbo1 turbo2 zcommand zload zlight zsnippet
 # ============================================================================= #
 # *** ➜ ➜ ➜ [THEMES]
 # ============================================================================= #
-zinit ice for \
-    load"![[ $MYPROMPT = p10k ]]" \
-    unload"![[ $MYPROMPT != p10k ]]" \
-    depth='1'; zinit light romkatv/powerlevel10k
+# Load when MYPROMPT == 1
+zinit ice for load'![[ $MYPROMPT = 1 ]]' unload'![[ $MYPROMPT != 1 ]]' \
+depth='1'; zinit light romkatv/powerlevel10k
 
-zinit lucid load"![[ $MYPROMPT = pure ]]" unload"![[ $MYPROMPT != pure ]]" \
-    pick"/dev/null" multisrc"{async,pure}.zsh" atload'!prompt_pure_precmd' nocd for \
-    sindresorhus/pure
+# Load when MYPROMPT == 2
+zinit ice load'![[ $MYPROMPT = 2 ]]' unload'![[ $MYPROMPT != 2 ]]' \
+    pick"/dev/null" multisrc"{async,pure}.zsh" \
+    atload'!prompt_pure_precmd' lucid nocd
+zinit load sindresorhus/pure
+
+# Load when MYPROMPT == 3
+zinit ice load'![[ $MYPROMPT = 3 ]]' unload'![[ $MYPROMPT != 3 ]]' \
+    atload'!geometry::prompt' lucid nocd
+zinit load geometry-zsh/geometry
 # ============================================================================= #
 # *** ➜ ➜ ➜ [LOCAL]
 # ============================================================================= #
@@ -184,4 +153,4 @@ zinit is-snippet for \
 # ============================================================================= #
 # *** ➜ ➜ ➜ [p10k] [PROMPT]
 # ============================================================================= #
-if [ "$MYPROMPT" = p10k ]; then; source "$DOTFILES/zsh/themes/p10k.zsh"; fi
+zinit ice if"[[ $MYPROMPT = 1  ]]"; source "$DOTFILES/zsh/themes/p10k.zsh"

@@ -14,7 +14,6 @@ export XDG_CACHE_HOME="${XDG_CACHE_HOME:=$HOME/.cache}"
 export DOTFILES_BIN="$DOTFILES/bin"
 export GOPATH="$HOME/go"
 
-
 #export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 
 if [ -z "$DOTFILES" ]; then
