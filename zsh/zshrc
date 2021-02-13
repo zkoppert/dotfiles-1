@@ -136,8 +136,8 @@ zlight 'sharkdp/bat'
 turbo1 as"program" pick"src/batgrep.sh" 
 turbo1 as"program" pick"src/batdiff.sh"
 zlight 'eth-p/bat-extras' 
-    alias rg=batgrep.sh 
-    alias bd=batdiff.sh 
+    alias rg=batgrep.sh
+    alias bd=batdiff.sh
     alias man=batman.sh
 
 unset -f turbo0 turbo1 turbo2 zcommand zload zlight zsnippet
