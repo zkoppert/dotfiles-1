@@ -1,0 +1,3 @@
+for fload in ${@}; do
+        autoload -Uz ${_fload:t}
+    done

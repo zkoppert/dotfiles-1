@@ -6,8 +6,8 @@ export DOTFILES="$HOME/.dotfiles"
 export ZSH_HOME="$HOME/.zsh"
 export ZINIT_HOME="$HOME/.zinit"
 MYPROMPT='1'
-export WORKON_HOME=~/.virtualenvs
-source ~/.local/bin/virtualenvwrapper.sh
+ZSH_FUNCTIONS="$DOTFILES/zsh/functions"
+ZSH_COMPLETIONS="$DOTFILES/zsh/completions"
 # ============================================================================= #
 # *** ➜ ➜ ➜ ZINIT
 # ============================================================================= #
@@ -20,18 +20,20 @@ if [[ ! -f "$ZINIT_HOME/bin/zinit.zsh" ]]; then
 fi; source "$ZINIT_HOME/bin/zinit.zsh"
 (( ${+_comps} )) && _comps[zinit]=_zinit
 autoload -Uz _zinit
-fpath+=( "${DOTFILES}/zsh/functions/" )
-    for func in $DOTFILES/zsh/functions/*; do
+fpath+=( "${ZSH_FUNCTIONS}/autoload/" )
+    for func in $ZSH_FUNCTIONS/autoload/*; do
         autoload -Uz ${func:t}
     done
 unset func
-fpath+=( "${DOTFILES}/bin/" )
+# ============================================================================= #
+fpath+=( "${ZSH_COMPLETIONS}" ) 
 module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
 # ============================================================================= #
 turbo0()   { zinit ice wait"0a" lucid             "${@}"; }
 turbo1()   { zinit ice wait"0b" lucid             "${@}"; }
 turbo2()   { zinit ice wait"0c" lucid             "${@}"; }
 zcommand() { zinit ice wait"0b" lucid as"command" "${@}"; }
+zpack()    { zinit pack                           "${@}"; }
 zload()    { zinit load                           "${@}"; }
 zlight()   { zinit light                          "${@}"; }
 zsnippet() { zinit snippet                        "${@}"; }
@@ -104,18 +106,18 @@ zinit-zsh/z-a-bin-gem-node \
 zinit-zsh/z-a-submods \
 zinit-zsh/z-a-rust
 
-turbo1; zinit pack for \
+turbo0 for zpack  
 dircolors-material \
 ls_colors \
 doctoc \
 @asciidoctor \
-fzf \
-pyenv
+fzf
 
+turbo1; zpack for pyenv
 turbo1; zload lukechilds/zsh-nvm
 turbo1; zsnippet "$DOTFILES/zsh/plugins/zsh-rbenv.plugin.zsh"
 
-turbo1 as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+turbo1 as"program" make'!' atclone'./direnv hook zsh > zhook.zsh'
 atpull'%atclone' src"zhook.zsh"; zlight 'direnv/direnv'
 
 turbo1 from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*"
