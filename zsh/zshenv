@@ -20,7 +20,8 @@ if [ -z "$DOTFILES" ]; then
 fi
 
 # Construct $PATH
-for i in "$HOME/.local/bin" \
+for i in "$DOTFILES/bin" \
+    "$HOME/.local/bin" \
     "$HOME/go/bin" \
     "$HOME/.yarn/bin" \
     "$HOME/.cabal/bin" \
