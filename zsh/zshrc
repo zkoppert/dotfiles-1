@@ -1,4 +1,3 @@
-# ============================================================================= #
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi; MYPROMPT='1'
@@ -7,6 +6,13 @@ export ZSH_HOME="$HOME/.zsh"
 export ZINIT_HOME="$HOME/.zinit"
 ZSH_FUNCTIONS="$DOTFILES/zsh/functions"
 ZSH_COMPLETIONS="$DOTFILES/zsh/completions"
+ZSH_AUTOSUGGEST_MANUAL_REBIND='set'
+#ZSH_AUTOSUGGEST_STRATEGY=(dir_history custom_history completion)
+HISTORY_SUBSTRING_SEARCH_FUZZY='set'
+ZSHZ_CMD=" " # Do not set the alias, fz will cover that
+ZSHZ_UNCOMMON='1'
+# Strings to ignore when using dotscheck, escape stuff that could be wild cards (../)
+dotsvar=( gtkrc-2.0 kwinrulesrc '\.\./' \.config/gtk-3\.0/settings\.ini )
 # ============================================================================= #
 # *** ➜ ➜ ➜ ZINIT
 # ============================================================================= #
@@ -30,6 +36,7 @@ unset func
 fpath+=( "${ZSH_COMPLETIONS}" ) 
 module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
 zmodload zdharma/zplugin &>/dev/null
+# Strings to ignore when using dotscheck, escape stuff that could be wild cards (../)
 # ============================================================================= #
 zt()       { zinit depth'3' lucid ${1/#[0-9][a-c]/wait"${1}"} "${@:2}"; }
 turbo0()   { zinit ice wait"0a" lucid             "${@}"; }
@@ -41,7 +48,8 @@ zlight()   { zinit light                          "${@}"; }
 zsnippet() { zinit snippet                        "${@}"; }
 auto-ls()  { ls; }
 [[ ${chpwd_functions[(r)auto-ls]} == auto-ls ]] || chpwd_functions=( auto-ls $chpwd_functions )
-#zsnippet "$DOTFILES/zsh/plugins/config-files.plugin.zsh"
+dotsvar=( gtkrc-2.0 kwinrulesrc '\.\./' \.config/gtk-3\.0/settings\.ini )
+zsnippet "$DOTFILES/zsh/plugins/config-files.plugin.zsh"
 # ============================================================================= #
 # *** ➜ ➜ ➜ OH-MY-ZSH
 # ============================================================================= #
@@ -50,9 +58,7 @@ setopt complete_aliases
 
 zt light-mode for \
     trigger-load'!x' svn \
-        OMZ::plugins/extract
-
-zt 0a light-mode for \
+        OMZ::plugins/extract \
         OMZL::history.zsh \
         OMZP::systemd/systemd.plugin.zsh \
         OMZP::sudo/sudo.plugin.zsh \
@@ -71,7 +77,6 @@ zt 0a light-mode for \
         OMZ::plugins/npm/npm.plugin.zsh \
         OMZ::plugins/pip/pip.plugin.zsh \
         OMZ::plugins/pyenv/pyenv.plugin.zsh 
-
 zt 0a light-mode for \
     mafredri/zsh-async \
     MichaelAquilina/zsh-you-should-use \
@@ -197,4 +202,4 @@ if [ -f '/home/sall/MEGA/(_GOOGLE_DEV_)/google-cloud-sdk/path.zsh.inc' ]; then .
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/sall/MEGA/(_GOOGLE_DEV_)/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/sall/MEGA/(_GOOGLE_DEV_)/google-cloud-sdk/completion.zsh.inc'; fi
 alias mce='micro'
-alias gic='git clone'
+alias gic='git clone'zsh
