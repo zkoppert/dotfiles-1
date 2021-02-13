@@ -24,6 +24,8 @@ fpath+=( "${ZSH_FUNCTIONS}/autoload/" )
         autoload -Uz ${func:t}
     done
 unset func
+    autoload -Uz chpwd_recent_dirs add-zsh-hook
+    add-zsh-hook chpwd chpwd_recent_dirs
 # ============================================================================= #
 fpath+=( "${ZSH_COMPLETIONS}" ) 
 module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
@@ -39,6 +41,7 @@ zlight()   { zinit light                          "${@}"; }
 zsnippet() { zinit snippet                        "${@}"; }
 auto-ls()  { ls; }
 [[ ${chpwd_functions[(r)auto-ls]} == auto-ls ]] || chpwd_functions=( auto-ls $chpwd_functions )
+#zsnippet "$DOTFILES/zsh/plugins/config-files.plugin.zsh"
 # ============================================================================= #
 # *** ➜ ➜ ➜ OH-MY-ZSH
 # ============================================================================= #
@@ -94,8 +97,6 @@ __bind_history_keys() {
     bindkey '^[[B' history-substring-search-down
 }
 zt 0b light-mode for \
-    autoload'#manydots-magic' \
-            knu/zsh-manydots-magic \
             RobSis/zsh-reentry-hook \
         pick'autoenv.zsh' nocompletions \
             Tarrasch/zsh-autoenv \
@@ -115,9 +116,11 @@ zt light-mode for \
         zinit-zsh/z-a-submods \
         zinit-zsh/z-a-as-monitor \
         zinit-zsh/z-a-bin-gem-node \
-        zinit-zsh/z-a-rust
+        zinit-zsh/z-a-rust \
+        NICHOLAS85/z-a-linkman \
+        NICHOLAS85/z-a-linkbin
 
-zt pack for \
+zt 0b pack for \
         dircolors-material \
         ls_colors \
         doctoc \
@@ -136,6 +139,24 @@ zlight 'docker/compose'
 
 turbo1 from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat"
 zlight 'sharkdp/bat'
+
+zt 0c light-mode binary for \
+    atclone'./just --completions zsh > _just' atpull'%atclone' \
+        casey/just \
+    bpick'*linux64*' \
+        zyedidia/micro \
+    atclone'mv -f **/*.zsh _bat' atpull'%atclone' \
+        @sharkdp/bat \
+        @sharkdp/hyperfine \
+        @sharkdp/fd
+
+zt 0c light-mode binary for \
+    lbin \
+        laggardkernel/git-ignore \
+    lbin from'gh-r' \
+        Peltoche/lsd \
+    lbin'!' patch"${pchf}/%PLUGIN%.patch" reset \
+        kazhala/dotbare
 
 turbo1 as"program" pick"src/batgrep.sh" 
 turbo1 as"program" pick"src/batdiff.sh"
@@ -170,3 +191,8 @@ zinit is-snippet for \
 # *** ➜ ➜ ➜ [p10k] [PROMPT]
 # ============================================================================= #
 zinit ice if"[[ $MYPROMPT = 1  ]]"; source "$DOTFILES/zsh/themes/p10k.zsh"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/sall/MEGA/(_GOOGLE_DEV_)/google-cloud-sdk/path.zsh.inc' ]; then . '/home/sall/MEGA/(_GOOGLE_DEV_)/google-cloud-sdk/path.zsh.inc'; fi
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/sall/MEGA/(_GOOGLE_DEV_)/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/sall/MEGA/(_GOOGLE_DEV_)/google-cloud-sdk/completion.zsh.inc'; fi
