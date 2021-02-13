@@ -196,3 +196,5 @@ zinit ice if"[[ $MYPROMPT = 1  ]]"; source "$DOTFILES/zsh/themes/p10k.zsh"
 if [ -f '/home/sall/MEGA/(_GOOGLE_DEV_)/google-cloud-sdk/path.zsh.inc' ]; then . '/home/sall/MEGA/(_GOOGLE_DEV_)/google-cloud-sdk/path.zsh.inc'; fi
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/sall/MEGA/(_GOOGLE_DEV_)/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/sall/MEGA/(_GOOGLE_DEV_)/google-cloud-sdk/completion.zsh.inc'; fi
+alias mce='micro'
+alias gic='git clone'
