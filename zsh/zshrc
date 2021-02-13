@@ -45,28 +45,30 @@ auto-ls()  { ls; }
 setopt promptsubst
 setopt complete_aliases
 
+zt light-mode for \
+    trigger-load'!x' svn \
+        OMZ::plugins/extract
+
 zt 0a light-mode for \
         OMZL::history.zsh \
         OMZP::systemd/systemd.plugin.zsh \
         OMZP::sudo/sudo.plugin.zsh \
-  OMZ::lib/git.zsh \
-  OMZ::plugins/git/git.plugin.zsh \
-  OMZ::lib/directories.zsh \
-  OMZ::lib/compfix.zsh \
-  OMZ::lib/grep.zsh \
-  OMZ::lib/termsupport.zsh \
-  OMZ::lib/theme-and-appearance.zsh \
-  OMZ::lib/key-bindings.zsh
-
+        OMZ::lib/git.zsh \
+        OMZ::plugins/git/git.plugin.zsh \
+        OMZ::lib/directories.zsh \
+        OMZ::lib/compfix.zsh \
+        OMZ::lib/grep.zsh \
+        OMZ::lib/termsupport.zsh \
+        OMZ::lib/theme-and-appearance.zsh \
+        OMZ::lib/key-bindings.zsh
 zt 0a light-mode for \
-  OMZ::plugins/ssh-agent/ssh-agent.plugin.zsh \
-  OMZ::plugins/gpg-agent/gpg-agent.plugin.zsh \
-  OMZ::plugins/extract/extract.plugin.zsh \
-  OMZ::plugins/npm/npm.plugin.zsh \
-  OMZ::plugins/pip/pip.plugin.zsh \
-  OMZ::plugins/pyenv/pyenv.plugin.zsh 
+        OMZ::plugins/ssh-agent/ssh-agent.plugin.zsh \
+        OMZ::plugins/gpg-agent/gpg-agent.plugin.zsh \
+        OMZ::plugins/extract/extract.plugin.zsh \
+        OMZ::plugins/npm/npm.plugin.zsh \
+        OMZ::plugins/pip/pip.plugin.zsh \
+        OMZ::plugins/pyenv/pyenv.plugin.zsh 
 
-# ============================================================================= #
 zt 0a light-mode for \
     mafredri/zsh-async \
     MichaelAquilina/zsh-you-should-use \
@@ -82,27 +84,29 @@ zt 0a light-mode for \
         OMZL::completion.zsh \
     lukechilds/zsh-better-npm-completion \
         blockf atpull'zinit creinstall -q .' \
-    zsh-users/zsh-completions
-
-# Don't bind these keys until ready
+    zsh-users/zsh-completions \
+    blockf nocompletions compile'functions/*~*.zwc' \
+        marlonrichert/zsh-edit
 bindkey -r '^[[A'
 bindkey -r '^[[B'
 __bind_history_keys() {
     bindkey '^[[A' history-substring-search-up
     bindkey '^[[B' history-substring-search-down
 }
-# History substring searching
-turbo0 atload'__bind_history_keys'
-zlight 'zsh-users/zsh-history-substring-search'
-# History search by `Ctrl+R`
-turbo0; zload 'zdharma/history-search-multi-word'
-# Syntax highlighting
-# (compinit without `-i` spawns warning on `sudo -s`)
-turbo0 atinit"ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zpcdreplay"
+zt 0b light-mode for \
+    autoload'#manydots-magic' \
+            knu/zsh-manydots-magic \
+            RobSis/zsh-reentry-hook \
+        pick'autoenv.zsh' nocompletions \
+            Tarrasch/zsh-autoenv \
+        atload'__bind_history_keys' atload'bindkey "${terminfo[kcuu1]}" history-substring-search-up; 
+        bindkey "${terminfo[kcud1]}" history-substring-search-down' \
+            zsh-users/zsh-history-substring-search \
+            zdharma/history-search-multi-word
+
+turbo1 atinit"ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zpcdreplay"
     zload zdharma/fast-syntax-highlighting
-# Autosuggestions
-# Note: should go _after_ syntax highlighting plugin
-turbo0 atload"_zsh_autosuggest_start"; zload 'zsh-users/zsh-autosuggestions'
+turbo1 atload"_zsh_autosuggest_start"; zload 'zsh-users/zsh-autosuggestions'
 #export ZSH_AUTOSUGGEST_USE_ASYNC=1
 #export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 # ============================================================================= #
@@ -121,7 +125,7 @@ zt pack for \
         fzf \
         pyenv
 
-zt 0b light-mode for lukechilds/zsh-nvm
+zt light-mode for lukechilds/zsh-nvm
 turbo1; zsnippet "$DOTFILES/zsh/plugins/zsh-rbenv.plugin.zsh"
 
 turbo1 as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' atpull'%atclone' src"zhook.zsh"
