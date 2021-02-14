@@ -27,8 +27,10 @@ if [ ! -f "$HOME/.dotfiles/lib/toolbox/utilities.sh" ]; then
 fi
 # shellcheck source=/dev/null
 . "$DOTFILES/lib/toolbox/utilities.sh"
-#: "${var:=}"
 CHECK_COLOR_SUPPORT
+: "${green:=}"
+: "${red:=}"
+: "${reset:=}"
 # ============================================================================= #
 #  ➜ ➜ ➜ FUNCTIONS
 # ============================================================================= #
@@ -61,7 +63,7 @@ IS_GIT() {
     fi
 }
 USAGE() {
-    SET_BOLD
+    tput bold
     cat <<EOF
     -===============================================================================-
     Usage: ./install [option] or dosync [option] (If installed option: --dosync)
@@ -80,19 +82,17 @@ USAGE() {
     -===============================================================================-
     -H | --help       - Show this help message
 EOF
-    RE_SET
+    stput sgr0
 }
 RM_BROKEN_LINKS() {
-    SET_MAGENTA
     #    if [[ "$VERBOSE" == True ]]; then
-    echo "Removing broken symlinks from $HOME"
+    MSG_INFO "Removing broken symlinks from $HOME"
     #    fi
     find "$HOME" -maxdepth 1 -name ".*" -type l | while read -r f; do if [ ! -e "$f" ]; then rm -f "$f"; fi; done
     #    if [[ "$VERBOSE" == True ]]; then
-    echo "Removing broken symlinks from $HOME/.config"
+    MSG_INFO "Removing broken symlinks from $HOME/.config"
     #    fi
     find "$HOME/.config" -maxdepth 1 -name "*" -type l | while read -r f; do if [ ! -e "$f" ]; then rm -f "$f"; fi; done
-    RE_SET
 }
 INIT_LOCAL() {
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
@@ -111,7 +111,6 @@ GIT_PULL() {
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     IS_GIT
-    SET_CYAN
     echo "Pulling latest changes from $ORIGIN"
     git pull $GITOPT
     echo "Pulling latest changes for submodules"
@@ -120,33 +119,26 @@ GIT_PULL() {
     git submodule "$GITSUBOPT" foreach --recursive git fetch
     git submodule "$GITSUBOPT" update --init --recursive
     cd || return 0
-    RE_SET
 }
 GIT_COMMIT() {
-    SET_GREEN
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     echo "Commiting latest changes to the repository"
     git commit -a $GITOPT
     cd || return 0
-    RE_SET
 }
 GIT_PUSH() {
-    SET_CYAN
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     echo "Pushing changes upstream to $ORIGIN" &&
         git push $GITOPT
     cd || return 0
-    RE_SET
 }
 GIT_ADD() {
-    SET_CYAN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     echo "Adding all changes"
     git add .
     cd || return 0
-    RE_SET
 }
 GIT_CHECK_ALL() {
     GET_GIT_ORIGIN
@@ -259,7 +251,7 @@ DO_OPTIONS() {
             USAGE
             exit 0
             ;;
-        *) echo "Unknown action, run: './install -H' for help." ;;
+        *) ERROR "Unknown action, run: './install -H' for help." ;;
         esac
         shift
     done
@@ -267,8 +259,6 @@ DO_OPTIONS() {
     DO_ACTION
 }
 DO_SYNC() {
-    CHECK_COLOR_SUPPORT
-
     RM_BROKEN_LINKS
     GET_SYNCFILE
     GET_FILES_LIST
@@ -277,53 +267,47 @@ DO_SYNC() {
         if [[ -e "$CONFIG_DOTFILE" ]] && [[ ! -L "$CONFIG_DOTFILE" ]]; then
             [[ ! -d "$BACKUP_DIR/config" ]] && mkdir -p "$BACKUP_DIR/config"
             CONFIG_BACKUP="$BACKUP_DIR/config/$(basename "$config_file")"
-            SET_YELLOW
-            echo "$CONFIG_DOTFILE already exists, backing up -> $CONFIG_BACKUP"
-            RE_SET
+            MSG_INFO "$CONFIG_DOTFILE already exists, backing up -> $CONFIG_BACKUP"
             cp -r "$CONFIG_DOTFILE" "$CONFIG_BACKUP"
             rm -rf "$CONFIG_DOTFILE"
             ln -s "$CONFIG_DOTSRC" "$CONFIG_DOTFILE"
-            SET_YELLOW
-            echo "Symlinked: $CONFIG_DOTSRC -> $CONFIG_DOTFILE"
+            MSG_OK "Symlinked: $CONFIG_DOTSRC -> $CONFIG_DOTFILE"
         elif [[ -e "$CONFIG_DOTFILE" ]]; then
             rm -f "$CONFIG_DOTFILE"
             ln -s "$CONFIG_DOTSRC" "$CONFIG_DOTFILE"
-            echo "Symlinked: $CONFIG_DOTSRC -> $CONFIG_DOTFILE"
+            MSG_OK "Symlinked: $CONFIG_DOTSRC -> $CONFIG_DOTFILE"
         else
             ln -s "$CONFIG_DOTSRC" "$CONFIG_DOTFILE"
-            echo "Symlinked: $CONFIG_DOTSRC -> $CONFIG_DOTFILE"
+            MSG_OK "Symlinked: $CONFIG_DOTSRC -> $CONFIG_DOTFILE"
         fi
-        RE_SET
     done
     for file in $SRCFILES; do
         GET_FILE "$file"
         if [[ -e "$DOTFILE" ]] && [[ ! -L "$DOTFILE" ]]; then
             [[ ! -d "$BACKUP_DIR" ]] && mkdir -p "$BACKUP_DIR"
             BACKUP="$BACKUP_DIR/$(basename "$file")"
-            SET_MAGENTA
-            echo "$DOTFILE already exists, backing up -> $BACKUP"
-            RE_SET cp -r "$DOTFILE" "$BACKUP"
+            MSG_INFO "$DOTFILE already exists, backing up -> $BACKUP"
+            cp -r "$DOTFILE" "$BACKUP"
             rm -rf "$DOTFILE"
             ln -s "$DOTSRC" "$DOTFILE"
-            SET_GREEN
-            echo "Symlinked: $DOTSRC -> $DOTFILE"
+            MSG_OK "Symlinked: $DOTSRC -> $DOTFILE"
         elif [[ -e "$DOTFILE" ]]; then
             rm -f "$DOTFILE"
             ln -s "$DOTSRC" "$DOTFILE"
-            echo "Symlinked: $DOTSRC -> $DOTFILE"
+            MSG_OK "Symlinked: $DOTSRC -> $DOTFILE"
         else
             ln -s "$DOTSRC" "$DOTFILE"
-            echo "Symlinked: $DOTSRC -> $DOTFILE"
+            MSG_OK "Symlinked: $DOTSRC -> $DOTFILE"
         fi
-        RE_SET
+        $reset
     done
 }
 DO_ACTION() {
     case $ACTION in
     sync)
         if DO_SYNC; then
-            SUCCESS
-            FINISHED "Sync completed"
+            SUCCESS "Success"
+            FINISHED "Symlinks completed"
         else
             ERROR "Sync failed"
         fi
@@ -331,8 +315,7 @@ DO_ACTION() {
     install)
         export PATH="$PATH:$DOTFILES_BIN"
         if DO_SYNC; then
-            SUCCESS
-            exec '/bin/zsh'
+            SUCCESS "Success"
         else
             ERROR "Install failed"
         fi
@@ -340,10 +323,9 @@ DO_ACTION() {
     esac
 }
 MAIN() {
+    CHECK_COLOR_SUPPORT
     NO_ROOT
-    SET_BLUE
-    echo "DoSync Version: $DOSYNC_VERSION"
-    RE_SET
+    TITLE "DoSync Version: $DOSYNC_VERSION"
     DO_OPTIONS "${@}"
     exit 0
 }
