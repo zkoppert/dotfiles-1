@@ -4,7 +4,6 @@ trap '' SIGINT SIGQUIT SIGTERM
 #  ➜ ➜ ➜ CONFIG
 # ============================================================================= #
 DOSYNC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CHECK_COLOR_SUPPORT
 # ============================================================================= #
 #  ➜ ➜ ➜ VARIABLES
 # ============================================================================= #
@@ -29,6 +28,7 @@ fi
 # shellcheck source=/dev/null
 . "$DOTFILES/lib/toolbox/utilities.sh"
 #: "${var:=}"
+CHECK_COLOR_SUPPORT
 # ============================================================================= #
 #  ➜ ➜ ➜ FUNCTIONS
 # ============================================================================= #
@@ -267,6 +267,8 @@ DO_OPTIONS() {
     DO_ACTION
 }
 DO_SYNC() {
+    CHECK_COLOR_SUPPORT
+
     RM_BROKEN_LINKS
     GET_SYNCFILE
     GET_FILES_LIST
@@ -340,7 +342,7 @@ DO_ACTION() {
 MAIN() {
     NO_ROOT
     SET_BLUE
-    "DoSync Version: $DOSYNC_VERSION"
+    echo "DoSync Version: $DOSYNC_VERSION"
     RE_SET
     DO_OPTIONS "${@}"
     exit 0
