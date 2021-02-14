@@ -4,6 +4,7 @@ trap '' SIGINT SIGQUIT SIGTERM
 #  ➜ ➜ ➜ CONFIG
 # ============================================================================= #
 DOSYNC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CHECK_COLOR_SUPPORT
 # ============================================================================= #
 #  ➜ ➜ ➜ VARIABLES
 # ============================================================================= #
@@ -27,10 +28,11 @@ if [ ! -f "$HOME/.dotfiles/lib/toolbox/utilities.sh" ]; then
 fi
 # shellcheck source=/dev/null
 . "$DOTFILES/lib/toolbox/utilities.sh"
+#: "${var:=}"
 # ============================================================================= #
 #  ➜ ➜ ➜ FUNCTIONS
 # ============================================================================= #
-__procceed() {
+EXECUTE() {
     echo "Proceed? [y/N]"
     read -r response
     case $response in
@@ -59,14 +61,13 @@ IS_GIT() {
     fi
 }
 USAGE() {
-    tput sgr0
-    tput bold
+    SET_BOLD
     cat <<EOF
     -===============================================================================-
     Usage: ./install [option] or dosync [option] (If installed option: --dosync)
     -===============================================================================-
     Options:
-    -U | --pull       - Update dotfiles repository and submodules 
+    -U | --pull       - Update dotfiles repository and submodules
     -D | --add        - Add all changes
     -C | --commit     - Commit changes
     -P | --push       - Push to repository
@@ -75,13 +76,14 @@ USAGE() {
     --notebook        - Install notebook (nb.sh)
     --fonts           - Install extra fonts
     -===============================================================================-
-    --dosync          - Install dotfiles base and add command 'dosync' 
+    --dosync          - Install dotfiles base and add command 'dosync'
     -===============================================================================-
     -H | --help       - Show this help message
 EOF
+    RE_SET
 }
 RM_BROKEN_LINKS() {
-    tput setaf 3
+    SET_MAGENTA
     #    if [[ "$VERBOSE" == True ]]; then
     echo "Removing broken symlinks from $HOME"
     #    fi
@@ -90,12 +92,11 @@ RM_BROKEN_LINKS() {
     echo "Removing broken symlinks from $HOME/.config"
     #    fi
     find "$HOME/.config" -maxdepth 1 -name "*" -type l | while read -r f; do if [ ! -e "$f" ]; then rm -f "$f"; fi; done
-    tput sgr0
+    RE_SET
 }
 INIT_LOCAL() {
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     IS_GIT
-    # init the main repo
     git submodule $GITSUB update --init --recursive
     cd || return 0
 }
@@ -110,6 +111,7 @@ GIT_PULL() {
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     IS_GIT
+    SET_CYAN
     echo "Pulling latest changes from $ORIGIN"
     git pull $GITOPT
     echo "Pulling latest changes for submodules"
@@ -118,26 +120,33 @@ GIT_PULL() {
     git submodule "$GITSUBOPT" foreach --recursive git fetch
     git submodule "$GITSUBOPT" update --init --recursive
     cd || return 0
+    RE_SET
 }
 GIT_COMMIT() {
+    SET_GREEN
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     echo "Commiting latest changes to the repository"
     git commit -a $GITOPT
     cd || return 0
+    RE_SET
 }
 GIT_PUSH() {
+    SET_CYAN
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     echo "Pushing changes upstream to $ORIGIN" &&
         git push $GITOPT
     cd || return 0
+    RE_SET
 }
 GIT_ADD() {
+    SET_CYAN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     echo "Adding all changes"
     git add .
     cd || return 0
+    RE_SET
 }
 GIT_CHECK_ALL() {
     GET_GIT_ORIGIN
@@ -261,17 +270,18 @@ DO_SYNC() {
     RM_BROKEN_LINKS
     GET_SYNCFILE
     GET_FILES_LIST
-    tput bold
-    tput setaf 6
     for config_file in $CONFIG_FILES; do
         GET_FILE "$config_file"
         if [[ -e "$CONFIG_DOTFILE" ]] && [[ ! -L "$CONFIG_DOTFILE" ]]; then
             [[ ! -d "$BACKUP_DIR/config" ]] && mkdir -p "$BACKUP_DIR/config"
             CONFIG_BACKUP="$BACKUP_DIR/config/$(basename "$config_file")"
+            SET_YELLOW
             echo "$CONFIG_DOTFILE already exists, backing up -> $CONFIG_BACKUP"
+            RE_SET
             cp -r "$CONFIG_DOTFILE" "$CONFIG_BACKUP"
             rm -rf "$CONFIG_DOTFILE"
             ln -s "$CONFIG_DOTSRC" "$CONFIG_DOTFILE"
+            SET_YELLOW
             echo "Symlinked: $CONFIG_DOTSRC -> $CONFIG_DOTFILE"
         elif [[ -e "$CONFIG_DOTFILE" ]]; then
             rm -f "$CONFIG_DOTFILE"
@@ -281,16 +291,19 @@ DO_SYNC() {
             ln -s "$CONFIG_DOTSRC" "$CONFIG_DOTFILE"
             echo "Symlinked: $CONFIG_DOTSRC -> $CONFIG_DOTFILE"
         fi
+        RE_SET
     done
     for file in $SRCFILES; do
         GET_FILE "$file"
         if [[ -e "$DOTFILE" ]] && [[ ! -L "$DOTFILE" ]]; then
             [[ ! -d "$BACKUP_DIR" ]] && mkdir -p "$BACKUP_DIR"
             BACKUP="$BACKUP_DIR/$(basename "$file")"
+            SET_MAGENTA
             echo "$DOTFILE already exists, backing up -> $BACKUP"
-            cp -r "$DOTFILE" "$BACKUP"
+            RE_SET cp -r "$DOTFILE" "$BACKUP"
             rm -rf "$DOTFILE"
             ln -s "$DOTSRC" "$DOTFILE"
+            SET_GREEN
             echo "Symlinked: $DOTSRC -> $DOTFILE"
         elif [[ -e "$DOTFILE" ]]; then
             rm -f "$DOTFILE"
@@ -300,12 +313,10 @@ DO_SYNC() {
             ln -s "$DOTSRC" "$DOTFILE"
             echo "Symlinked: $DOTSRC -> $DOTFILE"
         fi
+        RE_SET
     done
-    tput sgr0
 }
 DO_ACTION() {
-    tput bold
-    tput setaf 2
     case $ACTION in
     sync)
         if DO_SYNC; then
@@ -325,17 +336,14 @@ DO_ACTION() {
         fi
         ;;
     esac
-    tput sgr0
 }
 MAIN() {
     NO_ROOT
-    tput setaf 5
-    echo "DoSync Version: $DOSYNC_VERSION"
-    tput bold
-    tput setaf 4
+    SET_BLUE
+    "DoSync Version: $DOSYNC_VERSION"
+    RE_SET
     DO_OPTIONS "${@}"
     exit 0
-    tput sgr0
 }
 while true; do
     MAIN "${@}"
