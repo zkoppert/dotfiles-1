@@ -119,25 +119,19 @@ ztb1 as'command' pick'bin/pyenv' atinit'export PYENV_ROOT="$PWD"' \
     atpull"%atclone" src"zpyenv.zsh" nocompile'!'
     zlight pyenv/pyenv
 
-ztb1 from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*"
+ztb2 from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*"
     zlight docker/compose
-
-ztb1 from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat" 
+ztb2 from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat" 
         zlight sharkdp/bat
-
-ztb1 binary atclone'./just --completions zsh > _just' atpull'%atclone'
+ztb2 binary atclone'./just --completions zsh > _just' atpull'%atclone'
         zlight casey/just
-
-ztb1 bpick'*linux64*'; zlight zyedidia/micro  
-
-ztb1 atclone'mv -f **/*.zsh _bat' atpull'%atclone'
+ztb2 atclone'mv -f **/*.zsh _bat' atpull'%atclone'
         zlight @sharkdp/bat
         zlight @sharkdp/hyperfine
         zlight @sharkdp/fd
 
-ztb1 from"gh-r" as"program"
+ztb2 from"gh-r" as"program"
         zlight junegunn/fzf-bin
-
 ztb2 as"program" pick"src/batgrep.sh"
 ztb2 as"program" pick"src/batdiff.sh"
 zlight 'eth-p/bat-extras'
@@ -150,6 +144,7 @@ zinit pack for ls_colors
 zinit pack for @asciidoctor
 #zinit pack for doctoc
 #zinit pack"default" git for pyenv
+zinit load zdharma/zinit-configs
 # ============================================================================= #
 # *** ➜ ➜ ➜ [THEMES]
 # ============================================================================= #
