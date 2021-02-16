@@ -6,7 +6,6 @@ export ZSH_HOME="$HOME/.zsh"
 export ZINIT_HOME="$HOME/.zinit"
 ZFUNCTIONS="$DOTFILES/zsh/functions"
 ZCOMPLETIONS="$DOTFILES/zsh/completions"
-ASDF_DIR="${ASDF_DIR:-$ZINIT_HOME/plugins/asdf-vm---asdf}"
 #========================================================================== #
 # *** ➜ ➜ ➜ ZINIT
 # ============================================================================= #
@@ -20,8 +19,8 @@ fi; source "$ZINIT_HOME/bin/zinit.zsh"
 (( ${+_comps} )) && _comps[zinit]=_zinit
 autoload -Uz _zinit
 module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
-fpath+=( "${ZFUNCTIONS}/autoload/" "${ZCOMPLETIONS}" )
-    for func in $ZFUNCTIONS/autoload/*; do
+fpath+=( "${ZFUNCTIONS}" )
+    for func in $ZFUNCTIONS/*; do
         autoload -Uz ${func:t}
     done
 unset func
