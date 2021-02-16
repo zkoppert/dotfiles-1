@@ -24,16 +24,16 @@ fpath+=( "${ZFUNCTIONS}" )
         autoload -Uz ${func:t}
     done
 unset func
-dotsvar=( gtkrc-2.0 kwinrulesrc '\.\./' \.config/gtk-3\.0/settings\.ini )
-zmodload zdharma/zplugin &>/dev/null
-zmodload zdharma/zui &>/dev/null
+#dotsvar=( gtkrc-2.0 kwinrulesrc '\.\./' \.config/gtk-3\.0/settings\.ini )
+#zmodload zdharma/zplugin &>/dev/null
+#zmodload zdharma/zui &>/dev/null
     autoload -Uz chpwd_recent_dirs add-zsh-hook
     add-zsh-hook chpwd chpwd_recent_dirs
 # ============================================================================= #
 zt()       { zinit depth'3' lucid ${1/#[0-9][a-c]/wait"${1}"} "${@:2}"; }
-turbo0()   { zinit ice wait"0a" lucid             "${@}"; }
-turbo1()   { zinit ice wait"0b" lucid             "${@}"; }
-turbo2()   { zinit ice wait"0c" lucid             "${@}"; }
+ztb()      { zinit ice wait"0a" lucid             "${@}"; }
+ztb1()     { zinit ice wait"0b" lucid             "${@}"; }
+ztb2()     { zinit ice wait"0c" lucid             "${@}"; }
 zcommand() { zinit ice wait"0b" lucid as"command" "${@}"; }
 zload()    { zinit load                           "${@}"; }
 zpack()    { zinit pack                           "${@}"; }
@@ -44,32 +44,30 @@ auto-ls()  { ls; }
 # ============================================================================= #
 # *** ➜ ➜ ➜ OH-MY-ZSH
 # ============================================================================= #
-setopt promptsubst complete_aliases
+setopt promptsubst
 
-zt light-mode for \
-    trigger-load'!x' svn \
-        OMZ::plugins/extract \
-        OMZ::lib/history.zsh \
-        OMZ::plugins/systemd/systemd.plugin.zsh \
-        OMZ::plugins/sudo/sudo.plugin.zsh \
-        OMZ::lib/git.zsh \
-        OMZ::plugins/git/git.plugin.zsh \
-        OMZ::lib/directories.zsh \
-        OMZ::lib/compfix.zsh \
-        OMZ::lib/grep.zsh \
-        OMZ::lib/termsupport.zsh \
-        OMZ::lib/theme-and-appearance.zsh \
-        OMZ::lib/key-bindings.zsh
+zsnippet OMZ::lib/git.zsh
+zsnippet OMZ::plugins/git/git.plugin.zsh
+zsnippet OMZ::lib/history.zsh
+zsnippet OMZ::plugins/systemd/systemd.plugin.zsh
+zsnippet OMZ::plugins/sudo/sudo.plugin.zsh
+zsnippet OMZ::lib/directories.zsh
+zsnippet OMZ::lib/compfix.zsh
+zsnippet OMZ::lib/grep.zsh
+zsnippet OMZ::lib/termsupport.zsh
+zsnippet OMZ::lib/theme-and-appearance.zsh
+zsnippet OMZ::lib/key-bindings.zsh
 
-zt light-mode for \
-        OMZ::plugins/gpg-agent/gpg-agent.plugin.zsh \
-        OMZ::plugins/npm/npm.plugin.zsh \
-        OMZ::plugins/pip/pip.plugin.zsh \
-        OMZ::plugins/pyenv/pyenv.plugin.zsh
+zsnippet OMZ::plugins/extract/extract.plugin.zsh
+zsnippet OMZ::plugins/gpg-agent/gpg-agent.plugin.zsh
+zsnippet OMZ::plugins/npm/npm.plugin.zsh
+zsnippet OMZ::plugins/pip/pip.plugin.zsh
+zsnippet OMZ::plugins/pyenv/pyenv.plugin.zsh
 
 # ============================================================================= #
 # Additional completion definitions
-zt 0a light-mode for \
+ztb light-mode for \
+        marlonrichert/zsh-autocomplete \
     atload"zpcompinit" lucid as"completion" \
         OMZ::plugins/docker/_docker \
     atload'zstyle ":completion:*" special-dirs false' \
@@ -85,7 +83,7 @@ __bind_history_keys() {
     bindkey '^[[A' history-substring-search-up
     bindkey '^[[B' history-substring-search-down
 }
-zt 0a light-mode for \
+ztb light-mode for \
             RobSis/zsh-reentry-hook \
         pick'autoenv.zsh' nocompletions \
             Tarrasch/zsh-autoenv \
@@ -94,56 +92,54 @@ zt 0a light-mode for \
             zsh-users/zsh-history-substring-search \
             zdharma/history-search-multi-word
 
-turbo2 atinit"ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zpcdreplay"
+ztb1 atinit"ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zpcdreplay"
     zload zdharma/fast-syntax-highlighting
-turbo2 atload"_zsh_autosuggest_start"; zload zsh-users/zsh-autosuggestions
+ztb1 atload"_zsh_autosuggest_start"; zload zsh-users/zsh-autosuggestions
 # ============================================================================= #
-zt light-mode for \
-        zinit-zsh/z-a-patch-dl \
-        zinit-zsh/z-a-submods \
-        zinit-zsh/z-a-as-monitor \
-        zinit-zsh/z-a-bin-gem-node \
-        zinit-zsh/z-a-rust \
-        marlonrichert/zsh-autocomplete \
-        lukechilds/zsh-nvm
+zinit light-mode for \
+    zinit-zsh/z-a-patch-dl \
+    zinit-zsh/z-a-submods \
+    zinit-zsh/z-a-as-monitor \
+    zinit-zsh/z-a-bin-gem-node \
+    zinit-zsh/z-a-rust
 
-zt 0b light-mode for \
-    mafredri/zsh-async \
-    MichaelAquilina/zsh-you-should-use \
-    zpm-zsh/ls \
-    unixorn/git-extra-commands \
-    denysdovhan/gitio-zsh
+ztb1; zlight mafredri/zsh-async
+ztb1; zlight MichaelAquilina/zsh-you-should-use
+ztb1; zlight zpm-zsh/ls
+ztb1; zlight unixorn/git-extra-commands
+ztb1; zlight denysdovhan/gitio-zsh
+ztb1; zlight lukechilds/zsh-nvm
 
-zt 0b light-mode as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-    atpull'%atclone' src"zhook.zsh" for \
-        direnv/direnv
+ztb1 as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+    atpull'%atclone' src"zhook.zsh"
+    zlight direnv/direnv
 
-zt 0b light-mode as'command' pick'bin/pyenv' atinit'export PYENV_ROOT="$PWD"' \
+ztb1 as'command' pick'bin/pyenv' atinit'export PYENV_ROOT="$PWD"' \
     atclone'PYENV_ROOT="$PWD" ./libexec/pyenv init - > zpyenv.zsh' \
-    atpull"%atclone" src"zpyenv.zsh" nocompile'!' for \
-        pyenv/pyenv
+    atpull"%atclone" src"zpyenv.zsh" nocompile'!'
+    zlight pyenv/pyenv
 
-zt 0b light-mode from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*" for \
-        docker/compose
+ztb1 from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*"
+    zlight docker/compose
 
-turbo1 from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat" 
+ztb1 from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat" 
         zlight sharkdp/bat
 
-zt 0b light-mode binary for \
-    atclone'./just --completions zsh > _just' atpull'%atclone' \
-        casey/just \
-    bpick'*linux64*' \
-        zyedidia/micro \
-    atclone'mv -f **/*.zsh _bat' atpull'%atclone' \
-        @sharkdp/bat \
-        @sharkdp/hyperfine \
-        @sharkdp/fd
+ztb1 binary atclone'./just --completions zsh > _just' atpull'%atclone'
+        zlight casey/just
 
-zt 0b light-mode from"gh-r" as"program" for \
-        junegunn/fzf-bin
+ztb1 bpick'*linux64*'; zlight zyedidia/micro  
 
-turbo1 as"program" pick"src/batgrep.sh"
-turbo1 as"program" pick"src/batdiff.sh"
+ztb1 atclone'mv -f **/*.zsh _bat' atpull'%atclone'
+        zlight @sharkdp/bat
+        zlight @sharkdp/hyperfine
+        zlight @sharkdp/fd
+
+ztb1 from"gh-r" as"program"
+        zlight junegunn/fzf-bin
+
+ztb2 as"program" pick"src/batgrep.sh"
+ztb2 as"program" pick"src/batdiff.sh"
 zlight 'eth-p/bat-extras'
     alias rg=batgrep.sh
     alias bd=batdiff.sh
@@ -152,7 +148,7 @@ zlight 'eth-p/bat-extras'
 zinit pack for dircolors-material
 zinit pack for ls_colors
 zinit pack for @asciidoctor
-zinit pack for doctoc
+#zinit pack for doctoc
 #zinit pack"default" git for pyenv
 # ============================================================================= #
 # *** ➜ ➜ ➜ [THEMES]
