@@ -20,16 +20,16 @@ fi; source "$ZINIT_HOME/bin/zinit.zsh"
 (( ${+_comps} )) && _comps[zinit]=_zinit
 autoload -Uz _zinit
 module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
-zmodload zdharma/zplugin &>/dev/null
-zmodload zdharma/zui &>/dev/null
-    autoload -Uz chpwd_recent_dirs add-zsh-hook
-    add-zsh-hook chpwd chpwd_recent_dirs
 fpath+=( "${ZFUNCTIONS}/autoload/" "${ZCOMPLETIONS}" )
     for func in $ZFUNCTIONS/autoload/*; do
         autoload -Uz ${func:t}
     done
 unset func
-#dotsvar=( gtkrc-2.0 kwinrulesrc '\.\./' \.config/gtk-3\.0/settings\.ini )
+dotsvar=( gtkrc-2.0 kwinrulesrc '\.\./' \.config/gtk-3\.0/settings\.ini )
+zmodload zdharma/zplugin &>/dev/null
+zmodload zdharma/zui &>/dev/null
+    autoload -Uz chpwd_recent_dirs add-zsh-hook
+    add-zsh-hook chpwd chpwd_recent_dirs
 # ============================================================================= #
 zt()       { zinit depth'3' lucid ${1/#[0-9][a-c]/wait"${1}"} "${@:2}"; }
 turbo0()   { zinit ice wait"0a" lucid             "${@}"; }
