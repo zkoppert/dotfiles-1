@@ -5,6 +5,7 @@ fi; MYPROMPT='1'
 export DOTFILES="$HOME/.dotfiles"
 export ZSH_HOME="$HOME/.zsh"
 export ZINIT_HOME="$HOME/.zinit"
+ZALIASES="$DOTFILES/zsh/aliases"
 ZFUNCTIONS="$DOTFILES/zsh/functions"
 ZCOMPLETIONS="$DOTFILES/zsh/completions"
 DIRSTACKFILE="$HOME/.cache/zsh/dirs"
@@ -29,11 +30,9 @@ fi; source "$ZINIT_HOME/bin/zinit.zsh"
 (( ${+_comps} )) && _comps[zinit]=_zinit
 autoload -Uz _zinit
 module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
+dotsvar=( gtkrc-2.0 kwinrulesrc '\.\./' \.config/gtk-3\.0/settings\.ini )
 fpath+=( "${ZFUNCTIONS}" )
-    for func in $ZFUNCTIONS/*; do
-        autoload -Uz ${func:t}
-    done
-unset func
+# ============================================================================= #
 chpwd() {
     print -l $PWD ${(u)dirstack} >>$DIRSTACKFILE
     local d="$(sort -u $DIRSTACKFILE )"
@@ -49,44 +48,50 @@ zpack()    { zinit pack                           "${@}"; }
 zlight()   { zinit light                          "${@}"; }
 zsnippet() { zinit snippet                        "${@}"; }
 auto-ls()  { ls; }
+# ============================================================================= #
 [[ ${chpwd_functions[(r)auto-ls]} == auto-ls ]] || chpwd_functions=( auto-ls $chpwd_functions )
-#dotsvar=( gtkrc-2.0 kwinrulesrc '\.\./' \.config/gtk-3\.0/settings\.ini )
 zmodload zdharma/zplugin &>/dev/null
 zmodload zdharma/zui &>/dev/null
+    for func in $ZFUNCTIONS/*; do
+        autoload -Uz ${func:t}
+    done
+unset func
+autoload -Uz chpwd_recent_dirs add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+# ============================================================================= #
 zinit light-mode for \
+        zpm-zsh/ls \
         zinit-zsh/z-a-patch-dl \
         zinit-zsh/z-a-as-monitor \
         zinit-zsh/z-a-bin-gem-node \
         zinit-zsh/z-a-submods \
         zinit-zsh/z-a-rust
-autoload -Uz chpwd_recent_dirs add-zsh-hook
-add-zsh-hook chpwd chpwd_recent_dirs
 # ============================================================================= #
 # *** ➜ ➜ ➜ OH-MY-ZSH
 # ============================================================================= #
 setopt promptsubst
 
 zt 0a light-mode for \
-OMZ::lib/git.zsh \
-OMZ::plugins/git/git.plugin.zsh \
-OMZ::lib/history.zsh \
-OMZ::lib/clipboard.zsh \
-OMZ::lib/directories.zsh \
-OMZ::lib/compfix.zsh \
-OMZ::lib/grep.zsh \
-OMZ::lib/termsupport.zsh \
-OMZ::lib/spectrum.zsh \
-OMZ::lib/theme-and-appearance.zsh \
-OMZ::lib/key-bindings.zsh
+        OMZ::lib/git.zsh \
+        OMZ::plugins/git/git.plugin.zsh \
+        OMZ::lib/history.zsh \
+        OMZ::lib/clipboard.zsh \
+        OMZ::lib/directories.zsh \
+        OMZ::lib/compfix.zsh \
+        OMZ::lib/grep.zsh \
+        OMZ::lib/termsupport.zsh \
+        OMZ::lib/spectrum.zsh \
+        OMZ::lib/theme-and-appearance.zsh \
+        OMZ::lib/key-bindings.zsh
 
 zt 0a light-mode for \
-OMZ::plugins/systemd/systemd.plugin.zsh \
-OMZ::plugins/sudo/sudo.plugin.zsh \
-OMZ::plugins/extract/extract.plugin.zsh \
-OMZ::plugins/gpg-agent/gpg-agent.plugin.zsh \
-OMZ::plugins/npm/npm.plugin.zsh \
-OMZ::plugins/pip/pip.plugin.zsh \
-OMZ::plugins/pyenv/pyenv.plugin.zsh \
+        OMZ::plugins/systemd/systemd.plugin.zsh \
+        OMZ::plugins/sudo/sudo.plugin.zsh \
+        OMZ::plugins/extract/extract.plugin.zsh \
+        OMZ::plugins/gpg-agent/gpg-agent.plugin.zsh \
+        OMZ::plugins/npm/npm.plugin.zsh \
+        OMZ::plugins/pip/pip.plugin.zsh \
+        OMZ::plugins/pyenv/pyenv.plugin.zsh \
     atload'zstyle ":completion:*" special-dirs false' \
         OMZL::completion.zsh \
     atload"zpcompinit" as"completion" \
@@ -106,7 +111,6 @@ __bind_history_keys() {
     bindkey '^[[B' history-substring-search-down
 }
 ztb; zlight RobSis/zsh-reentry-hook
-ztb pick'autoenv.zsh' nocompletions; zlight Tarrasch/zsh-autoenv
 ztb atload'__bind_history_keys' atload'bindkey "${terminfo[kcuu1]}" history-substring-search-up;
     bindkey "${terminfo[kcud1]}" history-substring-search-down'
         zlight zsh-users/zsh-history-substring-search
@@ -117,57 +121,54 @@ ztb atinit"ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zpcdreplay"
 ztb atinit"ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20" atload"_zsh_autosuggest_start"
         zlight zsh-users/zsh-autosuggestions
 # ============================================================================= #
-ztb1; zlight zpm-zsh/ls
-ztb1; zlight mafredri/zsh-async
-ztb1; zlight lukechilds/zsh-nvm
-ztb1; zlight denysdovhan/gitio-zsh
-ztb1; zlight unixorn/git-extra-commands
+zt 0b light-mode for \
+        mafredri/zsh-async \
+        denysdovhan/gitio-zsh \
+        unixorn/git-extra-commands \
+        MichaelAquilina/zsh-you-should-use
 #ztb1; zlight marlonrichert/zsh-autocomplete
-ztb1; zlight MichaelAquilina/zsh-you-should-use
 
-ztb2 from"gh-r" atclone'./just --completions zsh > _just' atpull'%atclone'
-        zlight casey/just
-
-ztb2 from"gh-r" as"program" bpick'*linux64*'
-        zlight zyedidia/micro
-
-ztb1 as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-    atpull'%atclone' src"zhook.zsh"
-        zlight direnv/direnv
-
-ztb1 as'command' pick'bin/pyenv' atinit'export PYENV_ROOT="$PWD"' \
+zt 0c light-mode for \
+pick'autoenv.zsh' nocompletions \
+        Tarrasch/zsh-autoenv \
+as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+    atpull'%atclone' src"zhook.zsh" \
+        direnv/direnv \
+as'command' pick'bin/pyenv' atinit'export PYENV_ROOT="$PWD"' \
     atclone'PYENV_ROOT="$PWD" ./libexec/pyenv init - > zpyenv.zsh' \
-    atpull"%atclone" src"zpyenv.zsh" nocompile'!'
-        zlight pyenv/pyenv
+    atpull"%atclone" src"zpyenv.zsh" nocompile'!' \
+        pyenv/pyenv
 
-ztb2 from'gh-r' as'command' atinit'export PATH="$HOME/.yarn/bin:$PATH"' mv'yarn* -> yarn' pick"yarn/bin/yarn" bpick'*.tar.gz'
-    zlight yarnpkg/yarn
+zt 0c light-mode for lukechilds/zsh-nvm \
+from'gh-r' as'command' atinit'export PATH="$HOME/.yarn/bin:$PATH"' \
+    mv'yarn* -> yarn' pick"yarn/bin/yarn" bpick'*.tar.gz' \
+        yarnpkg/yarn \
+from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*" \
+        docker/compose \
+from"gh-r" as"program" mv"micro* -> micro" bpick"*linux64*" atpull'%atclone' \
+        zyedidia/micro \
+from"gh-r" as"program" \
+        junegunn/fzf-bin
 
-ztb2 from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*"
-        
-        zlight docker/compose
-ztb2 from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat" 
-        zlight sharkdp/bat
-
-ztb2 atclone'mv -f **/*.zsh _bat' atpull'%atclone'
-        zlight @sharkdp/bat
-        zlight @sharkdp/hyperfine
-        zlight @sharkdp/fd
-
-ztb2 from"gh-r" as"program"
-        zlight junegunn/fzf-bin
-
-ztb2 as"program" pick"src/batgrep.sh"
-ztb2 as"program" pick"src/batdiff.sh"
-        zlight 'eth-p/bat-extras'
+zt 0c light-mode for \
+from"gh-r" atclone'./just --completions zsh > _just' atpull'%atclone' \
+        casey/just \
+from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat" \
+        sharkdp/bat \
+atclone'mv -f **/*.zsh _bat' atpull'%atclone' \
+        @sharkdp/bat \
+        @sharkdp/hyperfine \
+        @sharkdp/fd \
+as"program" pick"src/batgrep.sh" \
+as"program" pick"src/batdiff.sh" \
+            'eth-p/bat-extras'
     alias rg=batgrep.sh
     alias bd=batdiff.sh
     alias man=batman.sh
 
-zinit pack for dircolors-material
-zinit pack for ls_colors
-zinit pack for @asciidoctor
-#zinit pack for doctoc
+zpack for dircolors-material
+zpack for ls_colors
+zpack for @asciidoctor
 #zinit pack"default" git for pyenv
 #zinit load zdharma/zinit-configs
 # ============================================================================= #
@@ -190,10 +191,8 @@ zinit load geometry-zsh/geometry
 # *** ➜ ➜ ➜ [LOCAL]
 # ============================================================================= #
 zinit is-snippet for if"[[ -f $HOME/.localrc  ]]" $HOME/.localrc
-#zinit is-snippet for if"[[ -f $DOTFILES/zsh/aliases/*.zsh ]]" ${DOTFILES}/zsh/aliases/*.zsh
-#zinit is-snippet for if"[[ -f $DOTFILES/zsh/completions/* ]]" ${DOTFILES}/zsh/completions/*
 # ============================================================================= #
 # *** ➜ ➜ ➜ [END]
 # ============================================================================= #
-#unset -f turbo0 turbo1 turbo2 zcommand zload zlight zsnippet
+unset -f zt ztb ztb1 ztb2 zcommand zload zpack zlight zsnippet
 zinit ice if"[[ $MYPROMPT = 1  ]]"; source "$DOTFILES/zsh/themes/p10k.zsh"

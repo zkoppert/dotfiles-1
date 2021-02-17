@@ -1,8 +1,0 @@
-completions_set() {
-    for completions_set in "$HOME/.dotfiles/zsh/completions/*"; do
-        if [ -r "$completions_set" ]; then
-            source "$completions_set" || return 0
-        fi
-    done
-    unset completions_set
-}
