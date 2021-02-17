@@ -34,18 +34,6 @@ fpath+=( "${ZFUNCTIONS}" )
         autoload -Uz ${func:t}
     done
 unset func
-#dotsvar=( gtkrc-2.0 kwinrulesrc '\.\./' \.config/gtk-3\.0/settings\.ini )
-zmodload zdharma/zplugin &>/dev/null
-zmodload zdharma/zui &>/dev/null
-    autoload -Uz chpwd_recent_dirs add-zsh-hook
-    add-zsh-hook chpwd chpwd_recent_dirs
-    
-zinit light-mode compile"handler" for \
-        zinit-zsh/z-a-patch-dl \
-        zinit-zsh/z-a-as-monitor \
-        zinit-zsh/z-a-bin-gem-node \
-        zinit-zsh/z-a-submods \
-        zinit-zsh/z-a-rust
 chpwd() {
     print -l $PWD ${(u)dirstack} >>$DIRSTACKFILE
     local d="$(sort -u $DIRSTACKFILE )"
@@ -62,6 +50,17 @@ zlight()   { zinit light                          "${@}"; }
 zsnippet() { zinit snippet                        "${@}"; }
 auto-ls()  { ls; }
 [[ ${chpwd_functions[(r)auto-ls]} == auto-ls ]] || chpwd_functions=( auto-ls $chpwd_functions )
+#dotsvar=( gtkrc-2.0 kwinrulesrc '\.\./' \.config/gtk-3\.0/settings\.ini )
+zmodload zdharma/zplugin &>/dev/null
+zmodload zdharma/zui &>/dev/null
+zinit light-mode for \
+        zinit-zsh/z-a-patch-dl \
+        zinit-zsh/z-a-as-monitor \
+        zinit-zsh/z-a-bin-gem-node \
+        zinit-zsh/z-a-submods \
+        zinit-zsh/z-a-rust
+autoload -Uz chpwd_recent_dirs add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
 # ============================================================================= #
 # *** ➜ ➜ ➜ OH-MY-ZSH
 # ============================================================================= #
@@ -96,8 +95,6 @@ OMZ::plugins/pyenv/pyenv.plugin.zsh \
 # Additional completion definitions
 ztb blockf atload"zpcompinit" as"completion"
         zlight lukechilds/zsh-better-npm-completion
-ztb as'completion' nocompile mv'*.zsh -> _git'
-        zlight felipec/git-completion
 ztb blockf atpull'zinit creinstall -q .'
         zlight zsh-users/zsh-completions
 ztb blockf nocompletions compile'functions/*~*.zwc'
@@ -120,14 +117,19 @@ ztb atinit"ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zpcdreplay"
 ztb atinit"ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20" atload"_zsh_autosuggest_start"
         zlight zsh-users/zsh-autosuggestions
 # ============================================================================= #
-ztb1; zlight rupa/z
 ztb1; zlight zpm-zsh/ls
 ztb1; zlight mafredri/zsh-async
 ztb1; zlight lukechilds/zsh-nvm
 ztb1; zlight denysdovhan/gitio-zsh
 ztb1; zlight unixorn/git-extra-commands
-ztb1; zlight marlonrichert/zsh-autocomplete
+#ztb1; zlight marlonrichert/zsh-autocomplete
 ztb1; zlight MichaelAquilina/zsh-you-should-use
+
+ztb2 from"gh-r" atclone'./just --completions zsh > _just' atpull'%atclone'
+        zlight casey/just
+
+ztb2 from"gh-r" as"program" bpick'*linux64*'
+        zlight zyedidia/micro
 
 ztb1 as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
     atpull'%atclone' src"zhook.zsh"
@@ -142,19 +144,19 @@ ztb2 from'gh-r' as'command' atinit'export PATH="$HOME/.yarn/bin:$PATH"' mv'yarn*
     zlight yarnpkg/yarn
 
 ztb2 from"gh-r" as"program" mv"docker* -> docker-compose" bpick"*linux*"
+        
         zlight docker/compose
 ztb2 from"gh-r" as"program" mv"bat* -> bat" pick"bat/bat" atload"alias cat=bat" 
         zlight sharkdp/bat
-ztb2 binary atclone'./just --completions zsh > _just' atpull'%atclone'
-        zlight casey/just
-ztb2 bpick'*linux64*'
-        zlight zyedidia/micro
+
 ztb2 atclone'mv -f **/*.zsh _bat' atpull'%atclone'
         zlight @sharkdp/bat
         zlight @sharkdp/hyperfine
         zlight @sharkdp/fd
+
 ztb2 from"gh-r" as"program"
         zlight junegunn/fzf-bin
+
 ztb2 as"program" pick"src/batgrep.sh"
 ztb2 as"program" pick"src/batdiff.sh"
         zlight 'eth-p/bat-extras'
@@ -187,8 +189,9 @@ zinit load geometry-zsh/geometry
 # ============================================================================= #
 # *** ➜ ➜ ➜ [LOCAL]
 # ============================================================================= #
-zinit is-snippet for \
-    if"[[ -f $HOME/.localrc  ]]" $HOME/.localrc
+zinit is-snippet for if"[[ -f $HOME/.localrc  ]]" $HOME/.localrc
+#zinit is-snippet for if"[[ -f $DOTFILES/zsh/aliases/*.zsh ]]" ${DOTFILES}/zsh/aliases/*.zsh
+#zinit is-snippet for if"[[ -f $DOTFILES/zsh/completions/* ]]" ${DOTFILES}/zsh/completions/*
 # ============================================================================= #
 # *** ➜ ➜ ➜ [END]
 # ============================================================================= #
