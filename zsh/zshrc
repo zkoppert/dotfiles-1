@@ -61,6 +61,7 @@ add-zsh-hook chpwd chpwd_recent_dirs
 # ============================================================================= #
 zinit light-mode for \
         zpm-zsh/ls \
+        zpm-zsh/material-colors \
         zinit-zsh/z-a-patch-dl \
         zinit-zsh/z-a-as-monitor \
         zinit-zsh/z-a-bin-gem-node \
@@ -166,7 +167,6 @@ as"program" pick"src/batdiff.sh" \
     alias bd=batdiff.sh
     alias man=batman.sh
 
-zpack for dircolors-material
 zpack for ls_colors
 zpack for @asciidoctor
 #zinit pack"default" git for pyenv
