@@ -9,11 +9,11 @@ ZFUNCTIONS="$DOTFILES/zsh/functions"
 ZCOMPLETIONS="$DOTFILES/zsh/completions"
 DIRSTACKFILE="$HOME/.cache/zsh/dirs"
 if [[ ! -a $DIRSTACKFILE ]]; then
-    mkdir -p $DIRSTACKFILE[0,-5]
-    touch $DIRSTACKFILE
+mkdir -p $DIRSTACKFILE[0,-5]
+touch $DIRSTACKFILE
 fi
 if [[ -f $DIRSTACKFILE ]] && [[ $#dirstack -eq 0 ]]; then
-    dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
+dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
 fi
 DIRSTACKSIZE=20
 #========================================================================== #
