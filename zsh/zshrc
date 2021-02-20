@@ -9,11 +9,11 @@ ZFUNCTIONS="$DOTFILES/zsh/functions"
 ZCOMPLETIONS="$DOTFILES/zsh/completions"
 DIRSTACKFILE="$HOME/.cache/zsh/dirs"
 if [[ ! -a $DIRSTACKFILE ]]; then
-mkdir -p $DIRSTACKFILE[0,-5]
-touch $DIRSTACKFILE
+    mkdir -p $DIRSTACKFILE[0,-5]
+    touch $DIRSTACKFILE
 fi
 if [[ -f $DIRSTACKFILE ]] && [[ $#dirstack -eq 0 ]]; then
-dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
+    dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
 fi
 DIRSTACKSIZE=20
 #========================================================================== #
@@ -98,34 +98,36 @@ zt 0a light-mode for \
         OMZ::plugins/docker/_docker
 # ============================================================================= #
 # Additional completion definitions
-ztb blockf atload"zpcompinit" as"completion"
-        zlight lukechilds/zsh-better-npm-completion
-ztb blockf atpull'zinit creinstall -q .'
-        zlight zsh-users/zsh-completions
-ztb blockf nocompletions compile'functions/*~*.zwc'
-        zlight marlonrichert/zsh-edit 
+zt 0a light-mode for \
+    blockf atload"zpcompinit" as"completion" \
+        lukechilds/zsh-better-npm-completion \
+    blockf atpull'zinit creinstall -q .' \
+        zsh-users/zsh-completions \
+    blockf nocompletions compile'functions/*~*.zwc' \
+        marlonrichert/zsh-edit 
 bindkey -r '^[[A'
 bindkey -r '^[[B'
 __bind_history_keys() {
     bindkey '^[[A' history-substring-search-up
     bindkey '^[[B' history-substring-search-down
 }
-ztb; zlight RobSis/zsh-reentry-hook
-ztb atload'__bind_history_keys' atload'bindkey "${terminfo[kcuu1]}" history-substring-search-up;
-    bindkey "${terminfo[kcud1]}" history-substring-search-down'
-        zlight zsh-users/zsh-history-substring-search
-ztb; zlight zdharma/history-search-multi-word
-
-ztb atinit"ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zpcdreplay"
-        zload zdharma/fast-syntax-highlighting
-ztb atinit"ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20" atload"_zsh_autosuggest_start"
-        zlight zsh-users/zsh-autosuggestions
+zt 0a light-mode for \
+    atload'__bind_history_keys' atload'bindkey "${terminfo[kcuu1]}" history-substring-search-up; \
+    bindkey "${terminfo[kcud1]}" history-substring-search-down' \
+        zsh-users/zsh-history-substring-search \
+        zdharma/history-search-multi-word \
+    atinit"ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zpcdreplay" \
+        zdharma/fast-syntax-highlighting \
+    atinit"ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20" atload"_zsh_autosuggest_start" \
+        zsh-users/zsh-autosuggestions
 # ============================================================================= #
 zt 0b light-mode for \
         mafredri/zsh-async \
         denysdovhan/gitio-zsh \
         unixorn/git-extra-commands \
-        MichaelAquilina/zsh-you-should-use
+        MichaelAquilina/zsh-you-should-use \
+        RobSis/zsh-reentry-hook
+
 #ztb1; zlight marlonrichert/zsh-autocomplete
 
 zt 0c light-mode for \
