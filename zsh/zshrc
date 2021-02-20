@@ -38,10 +38,6 @@ chpwd() {
     echo "$d" > $DIRSTACKFILE
 }
 zt()       { zinit depth'3' lucid ${1/#[0-9][a-c]/wait"${1}"} "${@:2}"; }
-ztb()      { zinit ice wait"0a" lucid             "${@}"; }
-ztb1()     { zinit ice wait"0b" lucid             "${@}"; }
-ztb2()     { zinit ice wait"0c" lucid             "${@}"; }
-zcommand() { zinit ice wait"0b" lucid as"command" "${@}"; }
 zload()    { zinit load                           "${@}"; }
 zpack()    { zinit pack                           "${@}"; }
 zlight()   { zinit light                          "${@}"; }
@@ -128,7 +124,7 @@ zt 0b light-mode for \
         MichaelAquilina/zsh-you-should-use \
         RobSis/zsh-reentry-hook
 
-#ztb1; zlight marlonrichert/zsh-autocomplete
+#zlight marlonrichert/zsh-autocomplete
 
 zt 0c light-mode for \
 pick'autoenv.zsh' nocompletions \
@@ -195,5 +191,5 @@ zinit is-snippet for if"[[ -f $HOME/.localrc  ]]" $HOME/.localrc
 # ============================================================================= #
 # *** ➜ ➜ ➜ [END]
 # ============================================================================= #
-unset -f zt ztb ztb1 ztb2 zcommand zload zpack zlight zsnippet
+unset -f zt zload zpack zlight zsnippet
 zinit ice if"[[ $MYPROMPT = 1  ]]"; source "$DOTFILES/zsh/themes/p10k.zsh"
