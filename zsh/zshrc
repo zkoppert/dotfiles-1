@@ -178,7 +178,7 @@ depth='1'; zinit light romkatv/powerlevel10k
 
 # Load when MYPROMPT == 2
 zinit ice load'![[ $MYPROMPT = 2 ]]' unload'![[ $MYPROMPT != 2 ]]' \
-      pick"/dev/null" multisrc"{async,pure}.zsh" \
+    pick"/dev/null" multisrc"{async,pure}.zsh" \
     atload'!prompt_pure_precmd' lucid nocd
 zinit load sindresorhus/pure
 
