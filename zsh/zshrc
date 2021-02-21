@@ -85,14 +85,14 @@ zt 0a light-mode for \
         OMZ::plugins/sudo/sudo.plugin.zsh \
         OMZ::plugins/extract/extract.plugin.zsh \
         OMZ::plugins/gpg-agent/gpg-agent.plugin.zsh \
-        OMZ::plugins/npm/npm.plugin.zsh \
-        OMZ::plugins/pip/pip.plugin.zsh \
-        OMZ::plugins/pyenv/pyenv.plugin.zsh \
     atload'zstyle ":completion:*" special-dirs false' \
         OMZL::completion.zsh \
     atload"zpcompinit" as"completion" \
         OMZ::plugins/docker/_docker
 
+if_cmd 'npm' && zsnippet OMZ::plugins/npm/npm.plugin.zsh 
+if_cmd 'pip' && zsnippet OMZ::plugins/pip/pip.plugin.zsh 
+if_cmd 'pyenv' && zsnippet OMZ::plugins/pyenv/pyenv.plugin.zsh
 if_cmd 'thefuck' && zsnippet OMZ::plugins/thefuck/thefuck.plugin.zsh
 # ============================================================================= #
 # Additional completion definitions
