@@ -111,9 +111,9 @@ GIT_PULL() {
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
     IS_GIT
-    echo "Pulling latest changes from $ORIGIN"
+    MSG_INFO "Pulling latest changes from $ORIGIN"
     git pull $GITOPT
-    echo "Pulling latest changes for submodules"
+    MSG_INFO "Pulling latest changes for submodules"
     # Required if a submodule origin changed
     git submodule "$GITSUBOPT" sync
     git submodule "$GITSUBOPT" foreach --recursive git fetch
@@ -123,20 +123,19 @@ GIT_PULL() {
 GIT_COMMIT() {
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
-    echo "Commiting latest changes to the repository"
+    MSG_INFO "Committing latest changes to the repository"
     git commit -a $GITOPT
     cd || return 0
 }
 GIT_PUSH() {
     GET_GIT_ORIGIN
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
-    echo "Pushing changes upstream to $ORIGIN" &&
+    MSG_INFO "Pushing changes upstream to $ORIGIN" &&
         git push $GITOPT
     cd || return 0
 }
 GIT_ADD() {
     cd "$DOTFILES" || ERROR "Failed to enter dotfiles directory"
-    echo "Adding all changes"
     git add .
     cd || return 0
 }
@@ -193,22 +192,18 @@ GET_OPTIONS() {
     if [ "$INSTALL_FONTS" = yes ]; then
         builtin cd "$DOTFILES/lib/install" || ERROR
         ./install-fonts.sh || ERROR "Failed to install"
-        SUCCESS
     fi
     if [ "$INSTALL_DOSYNC" = yes ]; then
-        echo "Installing >> DoSync"
         ACTION="install"
         DO_ACTION
     fi
     if [ "$INSTALL_NOTEBOOK" = yes ]; then
         builtin cd "$DOTFILES/lib/install" || ERROR
         ./nb.sh || ERROR "Failed to install"
-        SUCCESS
     fi
     if [ "$INSTALL_MICRO" = yes ]; then
         builtin cd "$DOTFILES/lib/install" || ERROR
         ./micro.sh || ERROR "Failed to install"
-        SUCCESS
     fi
 }
 DO_OPTIONS() {
@@ -306,8 +301,7 @@ DO_ACTION() {
     case $ACTION in
     sync)
         if DO_SYNC; then
-            SUCCESS "Success"
-            FINISHED "Symlinks completed"
+            SUCCESS "Synchronised"
         else
             ERROR "Sync failed"
         fi
@@ -315,12 +309,13 @@ DO_ACTION() {
     install)
         export PATH="$PATH:$DOTFILES_BIN"
         if DO_SYNC; then
-            SUCCESS "Success"
+            SUCCESS "Installed"
         else
             ERROR "Install failed"
         fi
         ;;
     esac
+    exit 0
 }
 MAIN() {
     CHECK_COLOR_SUPPORT

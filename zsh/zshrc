@@ -1,12 +1,11 @@
+#!/usr/bin/env zsh
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi; MYPROMPT='1'
 export DOTFILES="$HOME/.dotfiles"
 export ZSH_HOME="$HOME/.zsh"
 export ZINIT_HOME="$HOME/.zinit"
-ZALIASES="$DOTFILES/zsh/aliases"
 ZFUNCTIONS="$DOTFILES/zsh/functions"
-ZCOMPLETIONS="$DOTFILES/zsh/completions"
 DIRSTACKFILE="$HOME/.cache/zsh/dirs"
 if [[ ! -a $DIRSTACKFILE ]]; then
     mkdir -p $DIRSTACKFILE[0,-5]
@@ -42,6 +41,7 @@ zload()    { zinit load                           "${@}"; }
 zpack()    { zinit pack                           "${@}"; }
 zlight()   { zinit light                          "${@}"; }
 zsnippet() { zinit snippet                        "${@}"; }
+if_cmd()   { command -v "${@}" >/dev/null 2>&1            }
 auto-ls()  { ls; }
 # ============================================================================= #
 [[ ${chpwd_functions[(r)auto-ls]} == auto-ls ]] || chpwd_functions=( auto-ls $chpwd_functions )
@@ -92,6 +92,8 @@ zt 0a light-mode for \
         OMZL::completion.zsh \
     atload"zpcompinit" as"completion" \
         OMZ::plugins/docker/_docker
+
+if_cmd 'thefuck' && zsnippet OMZ::plugins/thefuck/thefuck.plugin.zsh
 # ============================================================================= #
 # Additional completion definitions
 zt 0a light-mode for \
@@ -191,5 +193,5 @@ zinit is-snippet for if"[[ -f $HOME/.localrc  ]]" $HOME/.localrc
 # ============================================================================= #
 # *** ➜ ➜ ➜ [END]
 # ============================================================================= #
-unset -f zt zload zpack zlight zsnippet
+unset -f zt zload zpack zlight zsnippet if_cmd
 zinit ice if"[[ $MYPROMPT = 1  ]]"; source "$DOTFILES/zsh/themes/p10k.zsh"
